@@ -21,4 +21,9 @@ do {\
     g_server_logger->info(msg);\
 } while(0)
 
+#define MSG_GATEWAY_SERVER_LOG_ERROR(msg) \
+do {\
+    g_server_logger->error(msg);\
+} while(0)
+
 #endif //IMSERVER_SERVER_H
