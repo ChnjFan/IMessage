@@ -4,3 +4,5 @@
 
 #include "Client.h"
 
+Client::Client(SessionPtr session) : conn(session), platformID(0) {
+}

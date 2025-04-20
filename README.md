@@ -1,4 +1,5 @@
-# IMessage
+# IMessage — C++ 即时通讯服务器
 
-## Introduction
+IMessage 是一个高性能、可扩展的即时通讯服务器，使用 C++ 编写，支持多用户实时消息传输。
+
 

@@ -5,6 +5,8 @@
 #ifndef IMSERVER_SERVER_H
 #define IMSERVER_SERVER_H
 
+#include <Logger.h>
+
 #define MODULE_NAME "MSG_GATEWAY_SERVER"
 #define LOGGER_CONFIG_NAME "imserver-msggateway.properties"
 #define SERVER_CONFIG_NAME "msggateway.yaml"

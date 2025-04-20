@@ -13,10 +13,12 @@
 class Client {
 public:
     Client() = default;
+    Client(const Client&) = default;
+    explicit Client(SessionPtr session);
 
 private:
-    /* 用户 socket 链接 */
-    std::unique_ptr<Session> conn;
+    /* 用户会话链接 */
+    SessionPtr  conn;
     /* 链接信息 */
     std::string token;
     std::string userID;

@@ -12,13 +12,23 @@
 #include <boost/asio.hpp>
 
 #include "Client.h"
+#include "Session.h"
+
+using namespace boost::asio;
+using ip::tcp;
 
 class ConnServer {
 public:
-    explicit ConnServer(int port, int socketMaxConnNum = 100000, int socketMaxMsgLen = 4096, int socketTimeout = 10);
+    explicit ConnServer(boost::asio::io_context &io, int port, int socketMaxConnNum = 100000,
+            int socketMaxMsgLen = 4096, int socketTimeout = 10);
 
     void run();
+    void changeOnlineStatus(int concurrent);
+
 private:
+    void handler();
+    void handleNewConnection(const boost::system::error_code &ec, SessionPtr &session);
+
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
 
     /* 长链接服务器配置 */
@@ -29,21 +39,22 @@ private:
     int writeBufferSize;
 
     /* 客户端管理 */
-    boost::asio::io_context io_context;
-    boost::object_pool<Client> clientPool;
-    std::unordered_map<std::string, Client> clients;
     uint64_t onlineUserConnNum;
+    tcp::acceptor acceptor;
+    boost::object_pool<Client> clientPool;
+    std::unordered_map<std::string, Client*> clients;
 };
 
 using ConnServerPtr = std::shared_ptr<ConnServer>;
 
 class ConnServerFactory {
 public:
-    static ConnServerPtr getConnServer(int port,
-                                       int socketMaxConnNum = 100000,
-                                       int socketMaxMsgLen = 4096,
-                                       int socketTimeout = 10) {
-        return std::make_shared<ConnServer>(port, socketMaxConnNum, socketMaxMsgLen, socketTimeout);
+    static ConnServerPtr getConnServer(boost::asio::io_context &io,
+            int port,
+            int socketMaxConnNum = 100000,
+            int socketMaxMsgLen = 4096,
+            int socketTimeout = 10) {
+        return std::make_shared<ConnServer>(io, port, socketMaxConnNum, socketMaxMsgLen, socketTimeout);
     }
 };
 

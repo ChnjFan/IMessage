@@ -14,7 +14,7 @@ add_library(common SHARED ${SRC_LIST}
         util.cpp)
 target_compile_definitions(common PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}/../")
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS CONFIG)
 find_package(log4cxx REQUIRED COMPONENTS log4cxx)
 find_package(yaml-cpp REQUIRED)
 

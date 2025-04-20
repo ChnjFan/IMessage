@@ -2,6 +2,8 @@
 // Created by fan on 25-4-13.
 //
 
+#include <boost/asio.hpp>
+
 #include "Logger.h"
 #include "server.h"
 #include "Exception.h"
@@ -20,14 +22,20 @@ int main() {
                                     + std::to_string(longPort));
         //TODO:连接数据库
 
-        ConnServerPtr longServer = ConnServerFactory::getConnServer(longPort,
-                                                                    config.getLongServerConfig()->socketMaxConnNum,
-                                                                    config.getLongServerConfig()->socketMaxMsgLen,
-                                                                    config.getLongServerConfig()->socketTimeout);
+        boost::asio::io_context io_context;
+        ConnServerPtr longServer = ConnServerFactory::getConnServer(io_context,
+                longPort,
+                config.getLongServerConfig()->socketMaxConnNum,
+                config.getLongServerConfig()->socketMaxMsgLen,
+                config.getLongServerConfig()->socketTimeout);
 
         MsgGatewayServer server(config, longServer);
         server.init();
+
+        longServer->changeOnlineStatus(4);
+
         server.getConnServer()->run();
+        io_context.run();
     }
     catch (Exception& e) {
         MSG_GATEWAY_SERVER_LOG_ERROR("Server error: " + std::string(e.what()));
