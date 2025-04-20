@@ -15,7 +15,7 @@ public:
     MsgGatewayServer(MsgGateWay::MsgGateWayConfig& config, ConnServerPtr& server);
 
     void init();
-    void run();
+    ConnServerPtr getConnServer();
 
 private:
     MsgGateWay::MsgGateWayConfig &config;

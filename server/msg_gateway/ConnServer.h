@@ -40,9 +40,9 @@ using ConnServerPtr = std::shared_ptr<ConnServer>;
 class ConnServerFactory {
 public:
     static ConnServerPtr getConnServer(int port,
-                                                     int socketMaxConnNum = 100000,
-                                                     int socketMaxMsgLen = 4096,
-                                                     int socketTimeout = 10) {
+                                       int socketMaxConnNum = 100000,
+                                       int socketMaxMsgLen = 4096,
+                                       int socketTimeout = 10) {
         return std::make_shared<ConnServer>(port, socketMaxConnNum, socketMaxMsgLen, socketTimeout);
     }
 };

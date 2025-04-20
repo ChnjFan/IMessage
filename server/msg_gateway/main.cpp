@@ -27,7 +27,7 @@ int main() {
 
         MsgGatewayServer server(config, longServer);
         server.init();
-        server.run();
+        server.getConnServer()->run();
     }
     catch (Exception& e) {
         MSG_GATEWAY_SERVER_LOG_ERROR("Server error: " + std::string(e.what()));
