@@ -28,4 +28,10 @@ do {\
     g_server_logger->error(msg);\
 } while(0)
 
+enum class SERVER_RETURN_CODE {
+    SERVER_RETURN_SUCCESS = 0,
+    SERVER_RETURN_SESSION_TIMEOUT = 1,
+    SERVER_RETURN_SESSION_OVERRUN = 2,
+};
+
 #endif //IMSERVER_SERVER_H

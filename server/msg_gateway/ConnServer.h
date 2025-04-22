@@ -5,12 +5,14 @@
 #ifndef IMSERVER_CONNSERVER_H
 #define IMSERVER_CONNSERVER_H
 
+#include <list>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <boost/pool/object_pool.hpp>
 #include <boost/asio.hpp>
 
+#include "server.h"
 #include "Client.h"
 #include "Session.h"
 
@@ -26,8 +28,12 @@ public:
     void changeOnlineStatus(int concurrent);
 
 private:
+    void detectionTasks();
+
     void handler();
     void handleNewConnection(const boost::system::error_code &ec, SessionPtr &session);
+
+    void error(SessionPtr &session, SERVER_RETURN_CODE code, std::string error);
 
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
 
@@ -42,7 +48,9 @@ private:
     uint64_t onlineUserConnNum;
     tcp::acceptor acceptor;
     boost::object_pool<Client> clientPool;
-    std::unordered_map<std::string, Client*> clients;
+    std::unordered_map<std::string, ClientPtr> clients;
+    std::list<SessionPtr> unauthorizedSessions;
+    steady_timer taskTimer;
 };
 
 using ConnServerPtr = std::shared_ptr<ConnServer>;

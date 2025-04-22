@@ -4,5 +4,13 @@
 
 #include "Client.h"
 
-Client::Client(SessionPtr session) : conn(session), platformID(0) {
+Client::Client(SessionPtr session) : conn(session) {
+}
+
+std::string Client::getUserID() const {
+    return conn->getUserID();
+}
+
+ClientPtr Client::constructor(SessionPtr session) {
+    return std::make_shared<Client>(session);
 }
