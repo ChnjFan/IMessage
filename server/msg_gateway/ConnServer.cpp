@@ -2,8 +2,8 @@
 // Created by fan on 25-4-13.
 //
 
-#include "server.h"
 #include "ConnServer.h"
+#include "server.h"
 
 ConnServer::ConnServer(io_context &io, int port, int socketMaxConnNum,
         int socketMaxMsgLen, int socketTimeout)
@@ -23,21 +23,24 @@ void ConnServer::run() {
     handler();
 }
 
-void ConnServer::changeOnlineStatus(int concurrent) {
-
+void ConnServer::deleteClient(const std::string &token) {
+    auto it = clients.find(token);
+    if (it != clients.end()) {
+        it->second->close();
+    }
 }
 
 void ConnServer::detectionTasks() {
     for (auto it = unauthorizedSessions.begin(); it != unauthorizedSessions.end(); ) {
         SessionPtr &session = *it;
         if (session->getState() == SessionState::SESSION_READY) {
-            // 将认证过的会话建立客户端对象
+            // 客户端用户密码认证过后生成token后会话认证成功，将认证过的会话建立客户端对象
             ClientPtr client = Client::constructor(session);
             clients.insert({client->getUserID(), client});
             it = unauthorizedSessions.erase(it);
         }
         else if (session->extend()) {
-            // 会话建立连接后 30s 没有认证结果判定为超期，超期会话直接释放断链
+            // 会话建立连接 30s 没有认证结果判定为超期，超期会话回复客户端超期后直接释放断链，此时客户端需要重新建链
             error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_TIMEOUT,
                 std::string("Session authentication timeout, IP: " + session->getPeerIP()));
             // TODO:将 IP 记录下来进行限流
@@ -53,7 +56,7 @@ void ConnServer::detectionTasks() {
 }
 
 void ConnServer::handler() {
-    SessionPtr session = std::make_shared<Session>(acceptor.get_executor());
+    SessionPtr session = std::make_shared<Session>(acceptor.get_executor(), shared_from_this());
     acceptor.async_accept(session->socket(), std::bind(
         &ConnServer::handleNewConnection, this, boost::asio::placeholders::error, session));
 }
@@ -67,14 +70,17 @@ void ConnServer::handleNewConnection(const boost::system::error_code &ec, Sessio
         }
         session->setState(SessionState::SESSION_INIT);
         unauthorizedSessions.push_back(session);
+        ++onlineUserConnNum;
+        session->start();
     }
 
     handler();
 }
 
 void ConnServer::error(SessionPtr &session, SERVER_RETURN_CODE code, std::string error) {
-    MSG_GATEWAY_SERVER_LOG_ERROR("Code: " + std::to_string(static_cast<int>(code)) + ". Error: " + error);
+    MSG_GATEWAY_SERVER_LOG_WARN("Code: " + std::to_string(static_cast<int>(code)) + ". Error: " + error);
     // TODO: 回复错误并关闭连接
+    session->trySend(error.c_str(), error.size());
     session->close();
 }
 

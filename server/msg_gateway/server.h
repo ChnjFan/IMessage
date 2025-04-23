@@ -5,7 +5,7 @@
 #ifndef IMSERVER_SERVER_H
 #define IMSERVER_SERVER_H
 
-#include <Logger.h>
+#include "Logger.h"
 
 #define MODULE_NAME "MSG_GATEWAY_SERVER"
 #define LOGGER_CONFIG_NAME "imserver-msggateway.properties"
@@ -21,6 +21,11 @@ do {\
 #define MSG_GATEWAY_SERVER_LOG_INFO(msg) \
 do {\
     g_server_logger->info(msg);\
+} while(0)
+
+#define MSG_GATEWAY_SERVER_LOG_WARN(msg) \
+do {\
+g_server_logger->warn(msg);\
 } while(0)
 
 #define MSG_GATEWAY_SERVER_LOG_ERROR(msg) \

@@ -18,6 +18,7 @@ public:
 
     std::string getUserID() const;
 
+    void close();
     static ClientPtr constructor(SessionPtr session);
 
 private:

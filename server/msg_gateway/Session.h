@@ -5,8 +5,11 @@
 #ifndef IMSERVER_SESSION_H
 #define IMSERVER_SESSION_H
 
+#include <list>
 #include <memory>
 #include <boost/asio.hpp>
+
+#include "Message.h"
 
 using namespace boost::asio;
 using ip::tcp;
@@ -17,11 +20,20 @@ enum class SessionState {
     SESSION_IDLE,
 };
 
-class Session {
+class ConnServer;
+
+class Session : public std::enable_shared_from_this<Session> {
 public:
-    explicit Session(const any_io_executor& ex);
+    Session(const any_io_executor& ex, const std::weak_ptr<ConnServer> &server);
 
     tcp::socket& socket();
+
+    void start();
+
+    bool authen();
+
+    bool tryRead(char* buffer, std::size_t bufferSize);
+    bool trySend(const char* buffer, std::size_t bufferSize);
 
     bool extend() const;
 
@@ -33,15 +45,24 @@ public:
     void close();
 
 private:
+    void doRead();
+    void doWrite();
+
     const int SESSION_DEFAULT_TIMEOUT = 30;
     tcp::socket socket_;
     SessionState state;
     boost::posix_time::ptime startTime;
-    int timeout;
+
     /* 会话信息 */
     std::string token;
     std::string userID;
     int platformID;
+
+    /* 消息读写缓存 */
+    Message readMsg;
+    std::list<Message> writeMsgs;
+
+    std::weak_ptr<ConnServer> connServer;
 };
 
 typedef std::shared_ptr<Session> SessionPtr;

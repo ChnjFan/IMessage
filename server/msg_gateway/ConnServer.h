@@ -19,13 +19,14 @@
 using namespace boost::asio;
 using ip::tcp;
 
-class ConnServer {
+class ConnServer : public std::enable_shared_from_this<ConnServer> {
 public:
-    explicit ConnServer(boost::asio::io_context &io, int port, int socketMaxConnNum = 100000,
+    explicit ConnServer(io_context &io, int port, int socketMaxConnNum = 100000,
             int socketMaxMsgLen = 4096, int socketTimeout = 10);
 
     void run();
-    void changeOnlineStatus(int concurrent);
+
+    void deleteClient(const std::string &token);
 
 private:
     void detectionTasks();
@@ -45,7 +46,7 @@ private:
     int writeBufferSize;
 
     /* 客户端管理 */
-    uint64_t onlineUserConnNum;
+    int onlineUserConnNum;
     tcp::acceptor acceptor;
     boost::object_pool<Client> clientPool;
     std::unordered_map<std::string, ClientPtr> clients;

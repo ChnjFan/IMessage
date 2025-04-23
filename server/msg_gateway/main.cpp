@@ -32,8 +32,6 @@ int main() {
         MsgGatewayServer server(config, longServer);
         server.init();
 
-        longServer->changeOnlineStatus(4);
-
         server.getConnServer()->run();
         io_context.run();
     }
