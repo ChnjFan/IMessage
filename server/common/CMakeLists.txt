@@ -12,8 +12,7 @@ add_library(common SHARED ${SRC_LIST}
         util.h
         Exception.h
         util.cpp
-        Message.h
-        ../../test/client.cpp)
+        Message.h)
 target_compile_definitions(common PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}/../")
 
 find_package(Boost REQUIRED COMPONENTS CONFIG)

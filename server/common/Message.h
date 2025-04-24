@@ -67,6 +67,10 @@ public:
         return headerSize + bodyLen;
     }
 
+    void setBodyLength(std::size_t len) {
+        bodyLen = len;
+    }
+
     [[nodiscard]] std::size_t getBodyLen() const {
         return bodyLen;
     }
@@ -85,9 +89,9 @@ public:
 
     char* encode() {
         boost::endian::native_to_big_inplace(bodyLen);
-        memcpy(pBuffer, &bodyLen, 4);
+        memcpy(pBuffer, &bodyLen, headerSize);
         boost::endian::native_to_big_inplace(checkSum);
-        memcpy(pBuffer + length(), &checkSum, 4);
+        memcpy(pBuffer + length(), &checkSum, sizeof(checkSum));
         return pBuffer;
     }
 

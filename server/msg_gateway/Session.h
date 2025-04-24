@@ -45,6 +45,8 @@ public:
     void close();
 
 private:
+    void readHeader();
+    void readBody();
     void doRead();
     void doWrite();
 

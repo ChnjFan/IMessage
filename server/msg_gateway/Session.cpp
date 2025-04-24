@@ -80,15 +80,41 @@ std::string Session::getPeerIP() const {
 void Session::close() {
     socket_.shutdown(tcp::socket::shutdown_send);
     // 设置 30s 超时确保发送完全部数据
-    socket_.set_option(socket_base::linger(true, 30));
+    // socket_.set_option(socket_base::linger(true, 30));
     socket_.close();
 }
 
-void Session::doRead() {
+void Session::readHeader() {
     auto self(shared_from_this());
-    async_read(socket_,buffer(readMsg.body(), readMsg.getBodySize()),
+    async_read(socket_,buffer(readMsg.header(), Message::MESSAGE_DEFAULT_HEADER_SIZE),
         [this, self](boost::system::error_code ec, std::size_t length)
         {
+            if (!ec)
+            {
+                int len = 0;
+                memcpy(&len, readMsg.body(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
+                boost::endian::big_to_native_inplace(len);
+                readMsg.setBodyLength(len);
+                readBody();
+            }
+            else
+            {
+                // 客户端关闭会话
+                if (const auto server = connServer.lock()) {
+                    MSG_GATEWAY_SERVER_LOG_INFO("Client disconnected");
+                    server->deleteClient(token);
+                    // TODO:如果还有有认证就关闭连接怎么处理
+                }
+            }
+        });
+}
+
+void Session::readBody() {
+    auto self(shared_from_this());
+    async_read(socket_,buffer(readMsg.body(), readMsg.getBodyLen()),
+        [this, self](boost::system::error_code ec, std::size_t length)
+        {
+            // 消息异常关闭客户端会话，需要客户端重连
             if (!ec && readMsg.decode())
             {
                 // TODO:处理客户端消息
@@ -101,9 +127,14 @@ void Session::doRead() {
                 if (const auto server = connServer.lock()) {
                     MSG_GATEWAY_SERVER_LOG_INFO("Client disconnected");
                     server->deleteClient(token);
+                    // TODO:如果还有有认证就关闭连接怎么处理
                 }
             }
         });
+}
+
+void Session::doRead() {
+    readHeader();
 }
 
 void Session::doWrite() {
