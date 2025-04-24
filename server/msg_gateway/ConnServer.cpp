@@ -31,12 +31,23 @@ void ConnServer::deleteClient(const std::string &token) {
 }
 
 void ConnServer::detectionTasks() {
+    handleUnauthenSession();
+    handleClients();
+
+    taskTimer.expires_at(taskTimer.expiry() + boost::asio::chrono::seconds(1));
+    taskTimer.async_wait(std::bind(&ConnServer::detectionTasks, this));
+}
+
+void ConnServer::handleUnauthenSession() {
     for (auto it = unauthorizedSessions.begin(); it != unauthorizedSessions.end(); ) {
         SessionPtr &session = *it;
         if (session->getState() == SessionState::SESSION_READY) {
             // 客户端用户密码认证过后生成token后会话认证成功，将认证过的会话建立客户端对象
             ClientPtr client = Client::constructor(session);
             clients.insert({client->getUserID(), client});
+            it = unauthorizedSessions.erase(it);
+        }
+        else if (session->getState() == SessionState::SESSION_DELETED) {
             it = unauthorizedSessions.erase(it);
         }
         else if (session->extend()) {
@@ -50,9 +61,18 @@ void ConnServer::detectionTasks() {
             ++it;
         }
     }
+}
 
-    taskTimer.expires_at(taskTimer.expiry() + boost::asio::chrono::seconds(1));
-    taskTimer.async_wait(std::bind(&ConnServer::detectionTasks, this));
+void ConnServer::handleClients() {
+    for (auto it = clients.begin(); it != clients.end(); ) {
+        ClientPtr client = it->second;
+        if (client->down()) {
+            it = clients.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
 }
 
 void ConnServer::handler() {
@@ -77,10 +97,10 @@ void ConnServer::handleNewConnection(const boost::system::error_code &ec, Sessio
     handler();
 }
 
-void ConnServer::error(SessionPtr &session, SERVER_RETURN_CODE code, std::string error) {
+void ConnServer::error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error) {
     MSG_GATEWAY_SERVER_LOG_WARN("Code: " + std::to_string(static_cast<int>(code)) + ". Error: " + error);
     // TODO: 回复错误并关闭连接
-    session->trySend(error.c_str(), error.size());
+    session->send(error.c_str(), error.size());
     session->close();
 }
 

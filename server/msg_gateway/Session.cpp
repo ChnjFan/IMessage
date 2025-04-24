@@ -7,9 +7,7 @@
 #include "Message.h"
 
 Session::Session(const any_io_executor &ex, const std::weak_ptr<ConnServer> &server)
-        : socket_(ex), state(SessionState::SESSION_IDLE), connServer(server) {
-    startTime = boost::posix_time::second_clock::universal_time();
-}
+        : socket_(ex), state(SessionState::SESSION_IDLE), trick(0), platformID(0), connServer(server)  { }
 
 tcp::socket & Session::socket() {
     return socket_;
@@ -20,28 +18,10 @@ void Session::start() {
     doRead();
 }
 
-bool Session::authen() {
-    Message message;
-    if (tryRead(message.body(), message.getBodySize())) {
-        // TODO: 校验 token
-        return true;
-    }
-    return false;
-}
-
-bool Session::tryRead(char* buffer, std::size_t bufferSize) {
-    try {
-        size_t readSize = socket_.read_some(boost::asio::buffer(buffer, bufferSize));
-        if (readSize <= 0) {
-            return false;
-        }
-    } catch (const boost::system::system_error &e) {
+bool Session::send(const char *buffer, std::size_t bufferSize) {
+    if (SessionState::SESSION_DELETED == state) {
         return false;
     }
-    return true;
-}
-
-bool Session::trySend(const char *buffer, std::size_t bufferSize) {
     Message message(buffer, bufferSize);
     writeMsgs.push_back(message);
     if (!writeMsgs.empty()) {
@@ -51,13 +31,11 @@ bool Session::trySend(const char *buffer, std::size_t bufferSize) {
 }
 
 //FIXME:有时会立即超时
-bool Session::extend() const {
-    const boost::posix_time::ptime current_time = boost::posix_time::second_clock::universal_time();
-    const boost::posix_time::time_duration duration = current_time - startTime;
-    if (duration.total_seconds() > SESSION_DEFAULT_TIMEOUT) {
-        MSG_GATEWAY_SERVER_LOG_DEBUG("Session timeout: " + std::to_string(duration.total_seconds()));
+bool Session::extend() {
+    if (trick > SESSION_DEFAULT_TIMEOUT) {
         return true;
     }
+    ++trick;
     return false;
 }
 
@@ -78,16 +56,18 @@ std::string Session::getPeerIP() const {
 }
 
 void Session::close() {
-    socket_.shutdown(tcp::socket::shutdown_send);
-    // 设置 30s 超时确保发送完全部数据
-    // socket_.set_option(socket_base::linger(true, 30));
+    socket_.shutdown(tcp::socket::shutdown_both);
     socket_.close();
+    setState(SessionState::SESSION_DELETED);
 }
 
 void Session::readHeader() {
+    if (SessionState::SESSION_DELETED == state) {
+        return;
+    }
     auto self(shared_from_this());
     async_read(socket_,buffer(readMsg.header(), Message::MESSAGE_DEFAULT_HEADER_SIZE),
-        [this, self](boost::system::error_code ec, std::size_t length)
+        [this, self](const boost::system::error_code &ec, std::size_t length)
         {
             if (!ec)
             {
@@ -100,19 +80,18 @@ void Session::readHeader() {
             else
             {
                 // 客户端关闭会话
-                if (const auto server = connServer.lock()) {
-                    MSG_GATEWAY_SERVER_LOG_INFO("Client disconnected");
-                    server->deleteClient(token);
-                    // TODO:如果还有有认证就关闭连接怎么处理
-                }
+                setState(SessionState::SESSION_DELETED);
             }
         });
 }
 
 void Session::readBody() {
+    if (SessionState::SESSION_DELETED == state) {
+        return;
+    }
     auto self(shared_from_this());
     async_read(socket_,buffer(readMsg.body(), readMsg.getBodyLen()),
-        [this, self](boost::system::error_code ec, std::size_t length)
+        [this, self](const boost::system::error_code &ec, std::size_t length)
         {
             // 消息异常关闭客户端会话，需要客户端重连
             if (!ec && readMsg.decode())
@@ -124,11 +103,7 @@ void Session::readBody() {
             else
             {
                 // 客户端关闭会话
-                if (const auto server = connServer.lock()) {
-                    MSG_GATEWAY_SERVER_LOG_INFO("Client disconnected");
-                    server->deleteClient(token);
-                    // TODO:如果还有有认证就关闭连接怎么处理
-                }
+                setState(SessionState::SESSION_DELETED);
             }
         });
 }
@@ -145,7 +120,7 @@ void Session::doWrite() {
     async_write(socket_,
         boost::asio::buffer(writeMsgs.front().encode(),
             writeMsgs.front().length()),
-            [this, self](boost::system::error_code ec, std::size_t /*length*/)
+            [this, self](const boost::system::error_code &ec, std::size_t /*length*/)
             {
                 if (!ec)
                 {

@@ -30,11 +30,13 @@ public:
 
 private:
     void detectionTasks();
+    void handleUnauthenSession();
+    void handleClients();
 
     void handler();
     void handleNewConnection(const boost::system::error_code &ec, SessionPtr &session);
 
-    void error(SessionPtr &session, SERVER_RETURN_CODE code, std::string error);
+    void error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error);
 
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
 

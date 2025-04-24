@@ -18,6 +18,7 @@ enum class SessionState {
     SESSION_INIT = 0,
     SESSION_READY,
     SESSION_IDLE,
+    SESSION_DELETED,
 };
 
 class ConnServer;
@@ -30,12 +31,9 @@ public:
 
     void start();
 
-    bool authen();
+    bool send(const char* buffer, std::size_t bufferSize);
 
-    bool tryRead(char* buffer, std::size_t bufferSize);
-    bool trySend(const char* buffer, std::size_t bufferSize);
-
-    bool extend() const;
+    bool extend();
 
     void setState(SessionState s);
     SessionState getState() const;
@@ -53,7 +51,7 @@ private:
     const int SESSION_DEFAULT_TIMEOUT = 30;
     tcp::socket socket_;
     SessionState state;
-    boost::posix_time::ptime startTime;
+    int trick;
 
     /* 会话信息 */
     std::string token;

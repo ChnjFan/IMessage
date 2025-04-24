@@ -44,7 +44,9 @@ public:
     }
 
     ~Message() {
-        delete[] pBuffer;
+        if (nullptr != pBuffer) {
+            delete[] pBuffer;
+        }
     }
 
     [[nodiscard]] const char* body() const {
