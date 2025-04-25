@@ -16,9 +16,9 @@ using ip::tcp;
 
 enum class SessionState {
     SESSION_INIT = 0,
+    SESSION_DELETED,
     SESSION_READY,
     SESSION_IDLE,
-    SESSION_DELETED,
 };
 
 class ConnServer;
@@ -51,6 +51,7 @@ private:
     const int SESSION_DEFAULT_TIMEOUT = 30;
     tcp::socket socket_;
     SessionState state;
+    /* 操作时间戳，用于操作超时检测，单位秒 */
     int trick;
 
     /* 会话信息 */

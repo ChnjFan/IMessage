@@ -34,13 +34,22 @@ public:
           , pBuffer(new char[headerSize + bodySize])
           , checkSum(0) { }
 
-    Message(const char* body, std::size_t bodySize)
-          : Message(MESSAGE_DEFAULT_HEADER_SIZE, bodySize + sizeof(int32_t)) {
-        bodyLen = bodySize;
-        memcpy(pBuffer, body, bodySize);
+    Message(const char* body, const std::size_t size)
+          : Message(MESSAGE_DEFAULT_HEADER_SIZE, size + sizeof(int32_t)) {
+        bodyLen = size;
+        memcpy(pBuffer, body, bodyLen);
         boost::crc_32_type crc32;
-        crc32.process_bytes(pBuffer, bodySize);
+        crc32.process_bytes(pBuffer, bodyLen);
         checkSum = static_cast<int32_t>(crc32.checksum());
+    }
+
+    Message(const Message& message)
+            : headerSize(message.headerSize)
+            , bodySize(message.bodySize)
+            , bodyLen(message.bodyLen)
+            , pBuffer(new char[message.size()])
+            , checkSum(message.checkSum) {
+        memcpy(pBuffer, message.pBuffer, message.size());
     }
 
     ~Message() {
@@ -87,6 +96,19 @@ public:
     }
 
     bool decode() {
+        // TODO:消息解密
+
+        memcpy(&checkSum, pBuffer + bodyLen, MESSAGE_DEFAULT_HEADER_SIZE);
+        boost::endian::big_to_native_inplace(checkSum);
+
+        // 校验消息 crc
+        boost::crc_32_type crc32;
+        crc32.process_bytes(pBuffer, bodyLen);
+        if (checkSum != static_cast<int32_t>(crc32.checksum())) {
+            return false;
+        }
+
+        method = std::string(pBuffer);
         return true;
     }
 
@@ -98,12 +120,23 @@ public:
         return pBuffer;
     }
 
+    std::string& getMethod() {
+        return method;
+    }
+
+    void clear() {
+        bodyLen = 0;
+        method.clear();
+        checkSum = 0;
+    }
+
 private:
 
     int headerSize;
     std::size_t bodySize;
     std::size_t bodyLen;
 
+    std::string method;
     char *pBuffer;
 
     int32_t checkSum;

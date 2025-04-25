@@ -26,6 +26,8 @@ public:
 
     void run();
 
+    void handleRequest(const SessionPtr& session, MessagePtr &message);
+
     void deleteClient(const std::string &token);
 
 private:
@@ -54,6 +56,9 @@ private:
     std::unordered_map<std::string, ClientPtr> clients;
     std::list<SessionPtr> unauthorizedSessions;
     steady_timer taskTimer;
+
+    /* grpc服务 */
+
 };
 
 using ConnServerPtr = std::shared_ptr<ConnServer>;

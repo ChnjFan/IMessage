@@ -23,6 +23,16 @@ void ConnServer::run() {
     handler();
 }
 
+void ConnServer::handleRequest(const SessionPtr& session, MessagePtr &message) {
+    if (session->getState() == SessionState::SESSION_INIT) {
+        if (message->getMethod() != "user.auth") {
+            // 消息异常，会话建链后没有认证
+            error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
+            return;
+        }
+    }
+}
+
 void ConnServer::deleteClient(const std::string &token) {
     auto it = clients.find(token);
     if (it != clients.end()) {
@@ -47,6 +57,7 @@ void ConnServer::handleUnauthenSession() {
             clients.insert({client->getUserID(), client});
             it = unauthorizedSessions.erase(it);
             --onlineUserConnNum;
+            session->setState(SessionState::SESSION_IDLE);
             MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
         }
         else if (session->getState() == SessionState::SESSION_DELETED) {
@@ -55,7 +66,7 @@ void ConnServer::handleUnauthenSession() {
         }
         else if (session->extend()) {
             // 会话建立连接 30s 没有认证结果判定为超期，超期会话回复客户端超期后直接释放断链，此时客户端需要重新建链
-            error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_TIMEOUT,
+            error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_AUTH_TIMEOUT,
                 std::string("Session authentication timeout, IP: " + session->getPeerIP()));
             // TODO:将 IP 记录下来进行限流
             it = unauthorizedSessions.erase(it);

@@ -14,7 +14,6 @@ tcp::socket & Session::socket() {
 }
 
 void Session::start() {
-    // socket_.non_blocking(true); // socket 设置为非阻塞，避免线程被某个会话一直阻塞
     doRead();
 }
 
@@ -22,7 +21,7 @@ bool Session::send(const char *buffer, std::size_t bufferSize) {
     if (SessionState::SESSION_DELETED == state) {
         return false;
     }
-    auto message = std::make_shared<Message>(buffer, bufferSize);
+    const auto message = std::make_shared<Message>(buffer, bufferSize);
     writeMsgs.push_back(message);
     if (!writeMsgs.empty()) {
         doWrite();
@@ -68,19 +67,20 @@ void Session::readHeader() {
     async_read(socket_,buffer(readMsg->header(), Message::MESSAGE_DEFAULT_HEADER_SIZE),
         [this, self](const boost::system::error_code &ec, std::size_t length)
         {
-            if (!ec)
-            {
-                int len = 0;
-                memcpy(&len, readMsg->body(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
-                boost::endian::big_to_native_inplace(len);
-                readMsg->setBodyLength(len);
-                readBody();
-            }
-            else
-            {
-                // 客户端关闭会话
+            if (ec) {
                 setState(SessionState::SESSION_DELETED);
+                return;
             }
+            int len = 0;
+            memcpy(&len, readMsg->body(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
+            boost::endian::big_to_native_inplace(len);
+            // 消息长度超过缓冲区长度异常，与客户端断链
+            if (len > readMsg->getBodySize()) {
+                setState(SessionState::SESSION_DELETED);
+                return;
+            }
+            readMsg->setBodyLength(len);
+            readBody();
         });
 }
 
@@ -89,21 +89,20 @@ void Session::readBody() {
         return;
     }
     auto self(shared_from_this());
-    async_read(socket_,buffer(readMsg->body(), readMsg->getBodyLen()),
+    async_read(socket_,buffer(readMsg->body(), readMsg->getBodyLen() + Message::MESSAGE_DEFAULT_HEADER_SIZE),
         [this, self](const boost::system::error_code &ec, std::size_t length)
         {
             // 消息异常关闭客户端会话，需要客户端重连
-            if (!ec && readMsg->decode())
-            {
-                // TODO:处理客户端消息
-                MSG_GATEWAY_SERVER_LOG_INFO(readMsg->body());
-                doRead();
-            }
-            else
-            {
-                // 客户端关闭会话
+            if (ec || !readMsg->decode()) {
                 setState(SessionState::SESSION_DELETED);
+                return;
             }
+            // TODO:处理客户端消息
+            if (const auto server = connServer.lock()) {
+                server->handleRequest(shared_from_this(), readMsg);
+            }
+            readMsg->clear();
+            doRead();
         });
 }
 
