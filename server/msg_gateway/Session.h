@@ -59,8 +59,8 @@ private:
     int platformID;
 
     /* 消息读写缓存 */
-    Message readMsg;
-    std::list<Message> writeMsgs;
+    MessagePtr readMsg;
+    std::list<MessagePtr> writeMsgs;
 
     std::weak_ptr<ConnServer> connServer;
 };

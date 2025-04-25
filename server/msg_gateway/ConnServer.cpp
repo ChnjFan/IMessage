@@ -46,9 +46,12 @@ void ConnServer::handleUnauthenSession() {
             ClientPtr client = Client::constructor(session);
             clients.insert({client->getUserID(), client});
             it = unauthorizedSessions.erase(it);
+            --onlineUserConnNum;
+            MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
         }
         else if (session->getState() == SessionState::SESSION_DELETED) {
             it = unauthorizedSessions.erase(it);
+            --onlineUserConnNum;
         }
         else if (session->extend()) {
             // 会话建立连接 30s 没有认证结果判定为超期，超期会话回复客户端超期后直接释放断链，此时客户端需要重新建链
@@ -56,6 +59,7 @@ void ConnServer::handleUnauthenSession() {
                 std::string("Session authentication timeout, IP: " + session->getPeerIP()));
             // TODO:将 IP 记录下来进行限流
             it = unauthorizedSessions.erase(it);
+            --onlineUserConnNum;
         }
         else {
             ++it;

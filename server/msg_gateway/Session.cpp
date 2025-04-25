@@ -4,10 +4,10 @@
 
 #include "Session.h"
 #include "ConnServer.h"
-#include "Message.h"
 
 Session::Session(const any_io_executor &ex, const std::weak_ptr<ConnServer> &server)
-        : socket_(ex), state(SessionState::SESSION_IDLE), trick(0), platformID(0), connServer(server)  { }
+        : socket_(ex), state(SessionState::SESSION_IDLE), trick(0), platformID(0)
+        , readMsg(std::make_shared<Message>()), connServer(server)  { }
 
 tcp::socket & Session::socket() {
     return socket_;
@@ -22,7 +22,7 @@ bool Session::send(const char *buffer, std::size_t bufferSize) {
     if (SessionState::SESSION_DELETED == state) {
         return false;
     }
-    Message message(buffer, bufferSize);
+    auto message = std::make_shared<Message>(buffer, bufferSize);
     writeMsgs.push_back(message);
     if (!writeMsgs.empty()) {
         doWrite();
@@ -30,7 +30,6 @@ bool Session::send(const char *buffer, std::size_t bufferSize) {
     return true;
 }
 
-//FIXME:有时会立即超时
 bool Session::extend() {
     if (trick > SESSION_DEFAULT_TIMEOUT) {
         return true;
@@ -66,15 +65,15 @@ void Session::readHeader() {
         return;
     }
     auto self(shared_from_this());
-    async_read(socket_,buffer(readMsg.header(), Message::MESSAGE_DEFAULT_HEADER_SIZE),
+    async_read(socket_,buffer(readMsg->header(), Message::MESSAGE_DEFAULT_HEADER_SIZE),
         [this, self](const boost::system::error_code &ec, std::size_t length)
         {
             if (!ec)
             {
                 int len = 0;
-                memcpy(&len, readMsg.body(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
+                memcpy(&len, readMsg->body(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
                 boost::endian::big_to_native_inplace(len);
-                readMsg.setBodyLength(len);
+                readMsg->setBodyLength(len);
                 readBody();
             }
             else
@@ -90,14 +89,14 @@ void Session::readBody() {
         return;
     }
     auto self(shared_from_this());
-    async_read(socket_,buffer(readMsg.body(), readMsg.getBodyLen()),
+    async_read(socket_,buffer(readMsg->body(), readMsg->getBodyLen()),
         [this, self](const boost::system::error_code &ec, std::size_t length)
         {
             // 消息异常关闭客户端会话，需要客户端重连
-            if (!ec && readMsg.decode())
+            if (!ec && readMsg->decode())
             {
                 // TODO:处理客户端消息
-                MSG_GATEWAY_SERVER_LOG_INFO(readMsg.body());
+                MSG_GATEWAY_SERVER_LOG_INFO(readMsg->body());
                 doRead();
             }
             else
@@ -118,8 +117,8 @@ void Session::doWrite() {
         return;
     }
     async_write(socket_,
-        boost::asio::buffer(writeMsgs.front().encode(),
-            writeMsgs.front().length()),
+        boost::asio::buffer(writeMsgs.front()->encode(),
+            writeMsgs.front()->length()),
             [this, self](const boost::system::error_code &ec, std::size_t /*length*/)
             {
                 if (!ec)

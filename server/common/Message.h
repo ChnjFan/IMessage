@@ -46,6 +46,7 @@ public:
     ~Message() {
         if (nullptr != pBuffer) {
             delete[] pBuffer;
+            pBuffer = nullptr;
         }
     }
 
@@ -107,5 +108,7 @@ private:
 
     int32_t checkSum;
 };
+
+typedef std::shared_ptr<Message> MessagePtr;
 
 #endif //MESSAGE_H
