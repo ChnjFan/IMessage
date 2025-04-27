@@ -15,4 +15,4 @@ set_target_properties(msg_gateway PROPERTIES
 
 find_package(Boost REQUIRED COMPONENTS CONFIG)
 find_package(yaml-cpp REQUIRED)
-target_link_libraries(msg_gateway PRIVATE ${Boost_LIBRARIES} common yaml-cpp)
+target_link_libraries(msg_gateway PRIVATE ${Boost_LIBRARIES} common user_service yaml-cpp )

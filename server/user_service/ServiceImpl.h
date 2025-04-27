@@ -1,0 +1,30 @@
+//
+// Created by Fan on 25-4-27.
+//
+
+#ifndef SERVICEIMPL_H
+#define SERVICEIMPL_H
+
+#include <grpcpp/grpcpp.h>
+
+#include "auth/auth.grpc.pb.h"
+
+class ServiceImpl final {
+public:
+    ~ServiceImpl();
+
+    void run(std::string& ip, int port);
+
+private:
+    void handleUserService();
+
+    // rpc 服务
+    user::auth::Auth::AsyncService authService;
+
+    std::unique_ptr<grpc::ServerCompletionQueue> completeQueue;
+    std::unique_ptr<grpc::Server> server;
+};
+
+
+
+#endif //SERVICEIMPL_H

@@ -8,11 +8,7 @@ link_directories(${THIRD_PARTY_PATH}/boost/lib
         ${THIRD_PARTY_PATH}/yaml-cpp/lib)
 aux_source_directory(./ SRC_LIST)
 
-add_library(common SHARED ${SRC_LIST}
-        util.h
-        Exception.h
-        util.cpp
-        Message.h)
+add_library(common SHARED ${SRC_LIST})
 target_compile_definitions(common PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}/../")
 
 find_package(Boost REQUIRED COMPONENTS CONFIG)
