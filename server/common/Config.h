@@ -12,6 +12,16 @@
 
 #define SERVER_CONFIG_PATH "config/"
 
+#define RPC_DEFAULT_PORT_MSG_GATEWAY    10000
+#define RPC_DEFAULT_PORT_USER_SERVICE   11000
+
+typedef struct {
+    std::string registerIP;     // 默认为 127.0.0.1
+    std::string listenIP;
+    bool autoSetPorts;
+    std::vector<int> ports;
+} RPC_CONFIG;
+
 class Config {
 public:
     explicit Config(const std::string &file);

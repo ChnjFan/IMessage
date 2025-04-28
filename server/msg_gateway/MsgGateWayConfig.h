@@ -10,14 +10,6 @@
 
 namespace MsgGateWay {
 
-#define RPC_DEFAULT_PORT    10000
-
-typedef struct {
-    std::string registerIP;
-    bool autoSetPorts;
-    std::vector<int> ports;
-} RPC_CONFIG;
-
 typedef struct {
     std::vector<int> ports;
     int socketMaxConnNum;
@@ -34,7 +26,7 @@ typedef struct {
 class MsgGateWayConfig : public Config {
 public:
     explicit MsgGateWayConfig(const std::string& file) : Config(file), config() {
-        std::shared_ptr<YAML::Node> configNode = getConfig();
+        const std::shared_ptr<YAML::Node> configNode = getConfig();
         if ((*configNode)["rpc"]) {
             readRpcConfig((*configNode)["rpc"]);
         }
@@ -50,7 +42,7 @@ public:
         config.rpcConfig.registerIP = node["registerIP"].as<std::string>();
         config.rpcConfig.autoSetPorts = node["autoSetPorts"].as<bool>();
         if (config.rpcConfig.autoSetPorts) {
-            config.rpcConfig.ports.push_back(RPC_DEFAULT_PORT);
+            config.rpcConfig.ports.push_back(RPC_DEFAULT_PORT_MSG_GATEWAY);
         }
         else if (node["ports"] && node["ports"].IsSequence()){
             for (auto port : node["ports"]) {

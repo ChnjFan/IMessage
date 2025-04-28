@@ -2,8 +2,8 @@
 // Created by fan on 25-4-13.
 //
 
-#ifndef IMSERVER_SERVER_H
-#define IMSERVER_SERVER_H
+#ifndef MSG_GATEWAY_UTIL_H
+#define MSG_GATEWAY_UTIL_H
 
 #include "Logger.h"
 
@@ -40,4 +40,4 @@ enum class SERVER_RETURN_CODE {
     CLIENT_RETURN_REQUEST_ERROR = 1001,         // 请求消息错误
 };
 
-#endif //IMSERVER_SERVER_H
+#endif //MSG_GATEWAY_UTIL_H

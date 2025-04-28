@@ -5,9 +5,9 @@
 #include <boost/asio.hpp>
 
 #include "Logger.h"
-#include "server.h"
 #include "Exception.h"
 #include "ConnServer.h"
+#include "MsgGetwayUtil.h"
 #include "MsgGatewayServer.h"
 #include "MsgGateWayConfig.h"
 

@@ -6,7 +6,8 @@
 #define IMSERVER_UTIL_H
 
 #include <string>
-#include <vector>
+
+
 
 std::string getProjectPath();
 

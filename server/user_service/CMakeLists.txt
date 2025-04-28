@@ -9,7 +9,11 @@ link_directories(${THIRD_PARTY_PATH}/yaml-cpp/lib)
 
 aux_source_directory(./ SRC_LIST)
 
-add_executable(user_service ${SRC_LIST})
+add_executable(user_service ${SRC_LIST}
+        UserServiceConfig.h
+        UserServiceUtil.h
+        AuthServiceImpl.cpp
+        AuthServiceImpl.h)
 set_target_properties(user_service PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/debug
 )

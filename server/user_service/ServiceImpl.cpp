@@ -3,7 +3,7 @@
 //
 
 #include "ServiceImpl.h"
-#include "CallData.h"
+#include "UserServiceUtil.h"
 
 ServiceImpl::~ServiceImpl() {
     server->Shutdown();
@@ -18,26 +18,7 @@ void ServiceImpl::run(std::string& ip, int port) {
     // 注册 rpc 服务
     builder.RegisterService(&authService);
 
-    completeQueue = builder.AddCompletionQueue();
-    server = builder.BuildAndStart();
-
-    handleUserService();
-}
-
-void ServiceImpl::handleUserService() {
-    // 为每个服务创建实例
-    new CallData<user::auth::Auth::AsyncService, user::auth::getAdminTokenReq, user::auth::getAdminTokenResp>(
-        &authService, completeQueue.get());
-    new CallData<user::auth::Auth::AsyncService, user::auth::parseTokenReq, user::auth::parseTokenResp>(
-        &authService, completeQueue.get());
-
-    void* tag = nullptr;
-    bool ok = false;
-    while (completeQueue->Next(&tag, &ok)) {
-        if (!ok) {
-            // TODO:错误处理
-            continue;
-        }
-        static_cast<BaseCallData*>(tag)->Proceed();
-    }
+    const std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+    USER_SERVICE_SERVER_LOG_INFO("Server listening on " + serverAddress);
+    server->Wait();
 }

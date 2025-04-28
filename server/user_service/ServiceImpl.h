@@ -7,7 +7,7 @@
 
 #include <grpcpp/grpcpp.h>
 
-#include "auth/auth.grpc.pb.h"
+#include "AuthServiceImpl.h"
 
 class ServiceImpl final {
 public:
@@ -16,10 +16,8 @@ public:
     void run(std::string& ip, int port);
 
 private:
-    void handleUserService();
-
     // rpc 服务
-    user::auth::Auth::AsyncService authService;
+    AuthServiceImpl authService;
 
     std::unique_ptr<grpc::ServerCompletionQueue> completeQueue;
     std::unique_ptr<grpc::Server> server;
