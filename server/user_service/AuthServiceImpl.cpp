@@ -5,18 +5,40 @@
 #include "AuthServiceImpl.h"
 #include "UserServiceUtil.h"
 
-AuthServiceImpl::AuthServiceImpl() {
-    //TODO:数据库资源初始化
+AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<UserServiceConfig> &config) : config(config) {
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerContext *context,
                                                           const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response) {
     class Reactor : public grpc::ServerUnaryReactor {
     public:
-        Reactor(const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response) {
-            //TODO:认证逻辑
+        Reactor(const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response, const std::shared_ptr<UserServiceConfig> &config) {
+            //检查 userID 是否为管理员
+            if (!isAdminUserID(config, request->userid())) {
+                response->set_token("");
+                response->set_expiretimeseconds(0);
+            }
+            else if (!isAdminSecret(config, request->secret())) {
+                response->set_token("");
+                response->set_expiretimeseconds(0);
+            }
+            else {
+                //TODO:设置 admin token 和过期时间
+                response->set_token("admin");
+                response->set_expiretimeseconds(100000000000);
+            }
             Finish(grpc::Status::OK);
         }
+
+        static bool isAdminUserID(const std::shared_ptr<UserServiceConfig> &config, const std::string &userID) {
+            return (config->getAdminConfig()->userID.find(userID) != config->getAdminConfig()->userID.end());
+        }
+
+        bool isAdminSecret(const std::shared_ptr<UserServiceConfig> &config, const std::string &secret) {
+            return (config->getAdminConfig()->secret == secret);
+        }
+
+
     private:
         void OnDone() override {
             USER_SERVICE_SERVER_LOG_INFO("user::auth::getAdminToken Finish");
@@ -27,7 +49,7 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
             USER_SERVICE_SERVER_LOG_INFO("user::auth::getAdminToken Cancelled");
         }
     };
-    return new Reactor(request, response);
+    return new Reactor(request, response, config);
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::parseToken(grpc::CallbackServerContext *context,

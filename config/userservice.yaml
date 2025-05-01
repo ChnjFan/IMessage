@@ -9,3 +9,7 @@ rpc:
   # List of ports that the RPC service listens on; configuring multiple ports will launch multiple instances. These must match the number of configured prometheus ports
   # It will only take effect when autoSetPorts is set to false.
   ports:
+
+admin:
+  secret: admin
+  userID: admin

@@ -5,6 +5,9 @@
 #include "ServiceImpl.h"
 #include "UserServiceUtil.h"
 
+ServiceImpl::ServiceImpl(const std::shared_ptr<UserServiceConfig> &config) : authService(config) {
+}
+
 ServiceImpl::~ServiceImpl() {
     server->Shutdown();
     completeQueue->Shutdown();

@@ -8,6 +8,11 @@
 #include "Config.h"
 #include "Exception.h"
 
+typedef struct {
+    std::string secret;
+    std::unordered_set<std::string> userID;
+} ADMIN_CONFIG;
+
 class UserServiceConfig : public Config {
 public:
     explicit UserServiceConfig(const std::string &config) : Config(config), rpcConfig() {
@@ -15,10 +20,17 @@ public:
         if ((*configNode)["rpc"]) {
             readRpcConfig((*configNode)["rpc"]);
         }
+        if ((*configNode)["admin"]) {
+            readAdminConfig((*configNode)["admin"]);
+        }
     }
 
     RPC_CONFIG* getRPCConfig() {
         return &rpcConfig;
+    }
+
+    ADMIN_CONFIG* getAdminConfig() {
+        return &adminConfig;
     }
 
 private:
@@ -45,7 +57,20 @@ private:
         }
     }
 
+    void readAdminConfig(const YAML::Node& node) {
+        adminConfig.secret = node["secret"].as<std::string>();
+        if (adminConfig.secret.empty()) {
+            adminConfig.secret = "admin";
+        }
+        adminConfig.userID.insert(node["userID"].as<std::string>());
+        if (adminConfig.userID.empty()) {
+            adminConfig.userID.insert("admin");
+        }
+
+    }
+
     RPC_CONFIG rpcConfig;
+    ADMIN_CONFIG adminConfig;
 };
 
 #endif //USERSERVICECONFIG_H
