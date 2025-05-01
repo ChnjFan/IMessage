@@ -17,13 +17,12 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
             if (!isAdminUserID(config, request->userid())) {
                 response->set_token("");
                 response->set_expiretimeseconds(0);
-            }
-            else if (!isAdminSecret(config, request->secret())) {
+            } else if (!isAdminSecret(config, request->secret())) {
                 response->set_token("");
                 response->set_expiretimeseconds(0);
-            }
-            else {
+            } else {
                 //TODO:设置 admin token 和过期时间
+                // token 根据 userID 生成
                 response->set_token("admin");
                 response->set_expiretimeseconds(100000000000);
             }
@@ -34,7 +33,7 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
             return (config->getAdminConfig()->userID.find(userID) != config->getAdminConfig()->userID.end());
         }
 
-        bool isAdminSecret(const std::shared_ptr<UserServiceConfig> &config, const std::string &secret) {
+        static bool isAdminSecret(const std::shared_ptr<UserServiceConfig> &config, const std::string &secret) {
             return (config->getAdminConfig()->secret == secret);
         }
 
