@@ -5,7 +5,10 @@
 #include "AuthServiceImpl.h"
 #include "UserServiceUtil.h"
 
-AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<UserServiceConfig> &config) : config(config) {
+#define DEFAULT_ADMIN_TOKEN "admin_token_"
+#define DEFAULT_ADMIN_EXPIRE_TIME   36000
+
+AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<UserServiceConfig> &config) : config(config){
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerContext *context,
@@ -14,18 +17,19 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
     public:
         Reactor(const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response, const std::shared_ptr<UserServiceConfig> &config) {
             //检查 userID 是否为管理员
-            if (!isAdminUserID(config, request->userid())) {
-                response->set_token("");
-                response->set_expiretimeseconds(0);
-            } else if (!isAdminSecret(config, request->secret())) {
-                response->set_token("");
-                response->set_expiretimeseconds(0);
-            } else {
-                //TODO:设置 admin token 和过期时间
-                // token 根据 userID 生成
-                response->set_token("admin");
-                response->set_expiretimeseconds(100000000000);
+            if (!isAdminUserID(config, request->userid())
+                || !isAdminSecret(config, request->secret())) {
+                Finish(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Request user is not admin"));
+                return;
             }
+
+            //TODO:设置 admin token 和过期时间
+            // token 根据 userID 生成
+            std::string token;
+            int64_t expireTime = 0;
+
+            response->set_token(DEFAULT_ADMIN_TOKEN + request->userid());
+            response->set_expiretimeseconds(DEFAULT_ADMIN_EXPIRE_TIME);
             Finish(grpc::Status::OK);
         }
 

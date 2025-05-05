@@ -9,6 +9,7 @@
 
 #include "MsgGateWayConfig.h"
 #include "ConnServer.h"
+#include "UserClient.h"
 
 class MsgGatewayServer {
 public:
@@ -22,6 +23,7 @@ private:
     ConnServerPtr longServer;
 
     /* TODO:grpc链接 */
+    std::shared_ptr<UserClient> userClient;  // 用户 rpc 服务
 
 };
 

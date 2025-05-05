@@ -7,9 +7,10 @@
 #include "Logger.h"
 #include "Exception.h"
 #include "ConnServer.h"
-#include "MsgGetwayUtil.h"
+#include "MsgGatewayUtil.h"
 #include "MsgGatewayServer.h"
 #include "MsgGateWayConfig.h"
+#include "AuthClient.h"
 
 std::shared_ptr<Logger> g_server_logger = nullptr;
 

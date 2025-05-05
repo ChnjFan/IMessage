@@ -3,7 +3,6 @@
 //
 
 #include "ConnServer.h"
-#include "server.h"
 
 ConnServer::ConnServer(io_context &io, int port, int socketMaxConnNum,
         int socketMaxMsgLen, int socketTimeout)
@@ -24,13 +23,14 @@ void ConnServer::run() {
 }
 
 void ConnServer::handleRequest(const SessionPtr& session, MessagePtr &message) {
-    if (session->getState() == SessionState::SESSION_INIT) {
-        if (message->getMethod() != "user.auth") {
-            // 消息异常，会话建链后没有认证
-            error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
-            return;
-        }
+    switch (session->getState()) {
+        case SessionState::SESSION_INIT:
+            authNewConnection(session, message);
+            break;
+        default:
+            break;
     }
+
 }
 
 void ConnServer::deleteClient(const std::string &token) {
@@ -110,6 +110,16 @@ void ConnServer::handleNewConnection(const boost::system::error_code &ec, Sessio
     }
 
     handler();
+}
+
+void ConnServer::authNewConnection(const SessionPtr &session, const MessagePtr &message) {
+    if (message->getMethod() != "user.auth") {
+        // 消息异常，会话建链后没有认证
+        error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
+        return;
+    }
+
+
 }
 
 void ConnServer::error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error) {

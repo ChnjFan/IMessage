@@ -6,12 +6,13 @@
 
 MsgGatewayServer::MsgGatewayServer(MsgGateWay::MsgGateWayConfig &config, ConnServerPtr &server)
     : config(config)
-    , longServer(server){
-
+    , longServer(server)
+    , userClient(nullptr) {
 }
 
 void MsgGatewayServer::init() {
     // TODO:获取用户服务rpc链接
+    userClient = std::make_shared<UserClient>();
 
     // TODO:长链接用于获取用户、推送、认证和消息rpc服务链接
 

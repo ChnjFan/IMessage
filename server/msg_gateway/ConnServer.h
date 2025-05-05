@@ -12,9 +12,10 @@
 #include <boost/pool/object_pool.hpp>
 #include <boost/asio.hpp>
 
-#include "server.h"
 #include "Client.h"
 #include "Session.h"
+#include "MsgGatewayUtil.h"
+#include "AuthClient.h"
 
 using namespace boost::asio;
 using ip::tcp;
@@ -37,6 +38,7 @@ private:
 
     void handler();
     void handleNewConnection(const boost::system::error_code &ec, SessionPtr &session);
+    void authNewConnection(const SessionPtr & session, const MessagePtr & message);
 
     void error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error);
 
@@ -58,7 +60,7 @@ private:
     steady_timer taskTimer;
 
     /* grpc服务 */
-
+    AuthClient authClient;
 };
 
 using ConnServerPtr = std::shared_ptr<ConnServer>;
