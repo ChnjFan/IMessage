@@ -41,7 +41,6 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
             return (config->getAdminConfig()->secret == secret);
         }
 
-
     private:
         void OnDone() override {
             USER_SERVICE_SERVER_LOG_INFO("user::auth::getAdminToken Finish");

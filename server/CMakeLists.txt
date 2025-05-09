@@ -8,11 +8,15 @@ set(THIRD_PARTY_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/")
 
 add_definitions( -g -W -Wall -lpthread -lprotobuf)
 
-# 服务器目录
-add_subdirectory(msg_gateway)
-add_subdirectory(user_service)
-
-# LIB 目录
+# 公共目录
 add_subdirectory(common)
 add_subdirectory(rpc)
 add_subdirectory(service_lib/user)
+
+# 服务器目录
+add_subdirectory(msggateway)
+
+# 服务模块
+add_subdirectory(services/user)
+# 服务客户端
+add_subdirectory(services/client)

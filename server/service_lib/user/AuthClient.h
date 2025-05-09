@@ -19,6 +19,4 @@ private:
     std::unique_ptr<user::auth::Auth::Stub> stub;
 };
 
-
-
 #endif //AUTHCLIENT_H
