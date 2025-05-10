@@ -9,7 +9,9 @@ link_directories(${THIRD_PARTY_PATH}/yaml-cpp/lib)
 
 aux_source_directory(./ SRC_LIST)
 
-add_executable(service_user ${SRC_LIST})
+add_executable(service_user ${SRC_LIST}
+        ../client/ClientManager.cpp
+        ../client/ClientManager.h)
 set_target_properties(service_user PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/debug
 )

@@ -11,7 +11,6 @@ add_definitions( -g -W -Wall -lpthread -lprotobuf)
 # 公共目录
 add_subdirectory(common)
 add_subdirectory(rpc)
-add_subdirectory(service_lib/user)
 
 # 服务器目录
 add_subdirectory(msggateway)

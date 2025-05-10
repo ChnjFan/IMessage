@@ -2,12 +2,12 @@
 // Created by Fan on 25-5-5.
 //
 
-#include "AuthClient.h"
+#include "UserClient.h"
 
-AuthClient::AuthClient(const std::shared_ptr<grpc::Channel> &channel)
+UserClient::UserClient(const std::shared_ptr<grpc::Channel> &channel)
         : stub(user::auth::Auth::NewStub(channel)) { }
 
-bool AuthClient::getAdminToken(std::string &userid, std::string &secret, std::string &token, int64_t &expireTime) const {
+bool UserClient::getAdminToken(std::string &userid, std::string &secret, std::string &token, int64_t &expireTime) const {
     grpc::ClientContext context;
     user::auth::getAdminTokenReq request;
     request.set_userid(userid);

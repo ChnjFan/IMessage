@@ -10,9 +10,9 @@
 #include <grpcpp/grpcpp.h>
 #include "auth/auth.grpc.pb.h"
 
-class AuthClient {
+class UserClient {
 public:
-    explicit AuthClient(const std::shared_ptr<grpc::Channel> &channel);
+    explicit UserClient(const std::shared_ptr<grpc::Channel> &channel);
     bool getAdminToken(std::string &userid, std::string &secret, std::string &token, int64_t &expireTime) const;
 
 private:

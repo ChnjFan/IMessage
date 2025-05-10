@@ -6,19 +6,20 @@
 
 #include "Logger.h"
 #include "Exception.h"
+#include "ConfigManager.h"
 #include "ConnServer.h"
 #include "MsgGatewayUtil.h"
 #include "MsgGatewayServer.h"
-#include "MsgGateWayConfig.h"
-#include "AuthClient.h"
 
 std::shared_ptr<Logger> g_server_logger = nullptr;
 
 int main() {
     try {
         g_server_logger = LoggerFactory::getLogger(LOGGER_CONFIG_NAME, MODULE_NAME);
-        MsgGateWay::MsgGateWayConfig config(SERVER_CONFIG_NAME);
-        int longPort = config.getLongServerConfig()->ports[0]; //多个实例时需要计算当前端口
+        ConfigManager config(CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY, [](std::shared_ptr<YAML::Node>& config) {
+
+        });
+        const int longPort = config.getMsgGatewayConfig()->ports[0]; //多个实例时需要计算当前端口
         MSG_GATEWAY_SERVER_LOG_INFO("Server is initializing. longConnSvrPort: "
                                     + std::to_string(longPort));
         //TODO:连接数据库
