@@ -4,16 +4,19 @@
 
 #include "ConnServer.h"
 
-ConnServer::ConnServer(io_context &io, int port, int socketMaxConnNum,
-        int socketMaxMsgLen, int socketTimeout)
-    : port(port)
-    , socketMaxConnNum(socketMaxConnNum)
-    , socketMaxMsgLen(socketMaxMsgLen)
-    , socketTimeout(socketTimeout)
-    , writeBufferSize(DEFAULT_WRITE_BUFFER_SIZE)
-    , onlineUserConnNum(0)
-    , acceptor(io, tcp::endpoint(tcp::v4(), port))
-    , taskTimer(io, chrono::seconds(1)) {
+#include "UserClient.h"
+
+ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, const int port, const int socketMaxConnNum,
+                       const int socketMaxMsgLen, const int socketTimeout)
+      : port(port)
+      , socketMaxConnNum(socketMaxConnNum)
+      , socketMaxMsgLen(socketMaxMsgLen)
+      , socketTimeout(socketTimeout)
+      , writeBufferSize(DEFAULT_WRITE_BUFFER_SIZE)
+      , onlineUserConnNum(0)
+      , acceptor(io, tcp::endpoint(tcp::v4(), port))
+      , taskTimer(io, chrono::seconds(1)) {
+    clientManager.registerService(SERVICE_NAME::SERVICE_USER, configMgr->getUserServiceConfig()->registerIP);
     // 每秒定时执行服务器检测任务
     taskTimer.async_wait(std::bind(&ConnServer::detectionTasks, this));
 }
@@ -41,17 +44,17 @@ void ConnServer::deleteClient(const std::string &token) {
 }
 
 void ConnServer::detectionTasks() {
-    handleUnauthenSession();
+    handleUnauthSession();
     handleClients();
 
     taskTimer.expires_at(taskTimer.expiry() + boost::asio::chrono::seconds(1));
     taskTimer.async_wait(std::bind(&ConnServer::detectionTasks, this));
 }
 
-void ConnServer::handleUnauthenSession() {
+void ConnServer::handleUnauthSession() {
     for (auto it = unauthorizedSessions.begin(); it != unauthorizedSessions.end(); ) {
         SessionPtr &session = *it;
-        if (session->getState() == SessionState::SESSION_READY) {
+        if (session->getState() >= SessionState::SESSION_READY) {
             // 客户端用户密码认证过后生成token后会话认证成功，将认证过的会话建立客户端对象
             ClientPtr client = Client::constructor(session);
             clients.insert({client->getUserID(), client});
@@ -118,8 +121,17 @@ void ConnServer::authNewConnection(const SessionPtr &session, const MessagePtr &
         error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
         return;
     }
+    UserClient client(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
+    USER_SERVICE_INFO *pUserInfo = UserClient::parseLoginRequest(message->body() + message->getMethod().size());
+    if (client.getAdminToken(pUserInfo->userID, pUserInfo->secret, &pUserInfo->token, &pUserInfo->expireTime)) {
+        session->setSessionInfo(pUserInfo);
+        session->setState(SessionState::SESSION_READY);
+    }
+    else {
+        error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, "Authentication failed");
+    }
 
-
+    delete pUserInfo;
 }
 
 void ConnServer::error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error) {

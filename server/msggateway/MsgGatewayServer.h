@@ -9,21 +9,18 @@
 
 #include "ConnServer.h"
 #include "ClientManager.h"
+#include "ConfigManager.h"
 
 class MsgGatewayServer {
 public:
-    MsgGatewayServer(MsgGateWay::MsgGateWayConfig& config, ConnServerPtr& server);
+    MsgGatewayServer(std::shared_ptr<ConfigManager>& config, ConnServerPtr& server);
 
     void init();
     ConnServerPtr getConnServer();
 
 private:
-    MsgGateWay::MsgGateWayConfig &config;
+    std::shared_ptr<ConfigManager> &config;
     ConnServerPtr longServer;
-
-    /* TODO:grpc链接 */
-    std::shared_ptr<ClientManager> clientManager;  // 用户 rpc 服务
-
 };
 
 

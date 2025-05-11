@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(service_client)
 
 include_directories(. ${THIRD_PARTY_PATH}/grpc/include
+                    ${THIRD_PARTY_PATH}/boost/include
                     ${PROJECT_SERVER_PATH}/rpc
                     ${PROJECT_SERVER_PATH}/common)
 link_directories(${THIRD_PARTY_PATH}/grpc/lib)
@@ -16,5 +17,6 @@ set(protobuf_DIR "${THIRD_PARTY_PATH}/grpc/lib/cmake/protobuf")
 
 find_package(protobuf REQUIRED COMPONENTS CONFIG)
 find_package(grpc REQUIRED COMPONENTS CONFIG)
+find_package(Boost REQUIRED COMPONENTS CONFIG)
 
-target_link_libraries(service_client PRIVATE gRPC::grpc++ rpc common)
+target_link_libraries(service_client PRIVATE ${Boost_LIBRARIES} gRPC::grpc++ rpc common)

@@ -41,6 +41,12 @@ void Session::setState(SessionState s) {
     state = s;
 }
 
+void Session::setSessionInfo(const USER_SERVICE_INFO *pInfo) {
+    userID = pInfo->userID;
+    token = pInfo->token;
+    tokenExpire = pInfo->expireTime;
+}
+
 SessionState Session::getState() const {
     return state;
 }

@@ -32,6 +32,25 @@ void ConfigManager::parseConfig(CONFIG_TYPE configType,
     } catch (YAML::BadFile& e) { }
 }
 
+bool ConfigManager::hasConfig(const CONFIG_TYPE configType) const {
+    bool result = false;
+    switch (configType) {
+        case CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY:
+            result = (msgGatewayConfig != nullptr);
+            break;
+        case CONFIG_TYPE::CONFIG_TYPE_SERVICE_USER:
+            result = (userServiceConfig != nullptr);
+            break;
+        default:
+            break;
+    }
+    return result;
+}
+
+bool ConfigManager::hasConfigField(const std::shared_ptr<YAML::Node> &configNode, const std::string &fieldName) {
+    return (configNode->IsDefined() && (*configNode)[fieldName].IsDefined() && !(*configNode)[fieldName].IsNull());
+}
+
 MSG_GATEWAY_CONFIG* ConfigManager::getMsgGatewayConfig() const {
     return msgGatewayConfig.get();
 }

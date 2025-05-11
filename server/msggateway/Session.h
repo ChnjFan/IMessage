@@ -10,6 +10,7 @@
 #include <boost/asio.hpp>
 
 #include "Message.h"
+#include "UserClient.h"
 
 using namespace boost::asio;
 using ip::tcp;
@@ -36,6 +37,8 @@ public:
     bool extend();
 
     void setState(SessionState s);
+    void setSessionInfo(const USER_SERVICE_INFO *pInfo);
+
     SessionState getState() const;
     std::string getUserID() const;
     std::string getPeerIP() const;
@@ -57,6 +60,7 @@ private:
     /* 会话信息 */
     std::string token;
     std::string userID;
+    int64_t tokenExpire;
     int platformID;
 
     /* 消息读写缓存 */

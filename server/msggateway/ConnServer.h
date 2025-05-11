@@ -13,16 +13,17 @@
 #include <boost/asio.hpp>
 
 #include "Client.h"
+#include "ClientManager.h"
+#include "ConfigManager.h"
 #include "Session.h"
 #include "MsgGatewayUtil.h"
-#include "AuthClient.h"
 
 using namespace boost::asio;
 using ip::tcp;
 
 class ConnServer : public std::enable_shared_from_this<ConnServer> {
 public:
-    explicit ConnServer(io_context &io, int port, int socketMaxConnNum = 100000,
+    explicit ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, int port, int socketMaxConnNum = 100000,
             int socketMaxMsgLen = 4096, int socketTimeout = 10);
 
     void run();
@@ -33,7 +34,7 @@ public:
 
 private:
     void detectionTasks();
-    void handleUnauthenSession();
+    void handleUnauthSession();
     void handleClients();
 
     void handler();
@@ -45,6 +46,8 @@ private:
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
 
     /* 长链接服务器配置 */
+    std::shared_ptr<ConfigManager> configMgr;
+
     int port;
     int socketMaxConnNum;
     int socketMaxMsgLen;
@@ -59,8 +62,8 @@ private:
     std::list<SessionPtr> unauthorizedSessions;
     steady_timer taskTimer;
 
-    /* grpc服务 */
-    AuthClient authClient;
+    /* rpc 服务客户端 */
+    ClientManager clientManager;
 };
 
 using ConnServerPtr = std::shared_ptr<ConnServer>;
@@ -68,11 +71,12 @@ using ConnServerPtr = std::shared_ptr<ConnServer>;
 class ConnServerFactory {
 public:
     static ConnServerPtr getConnServer(boost::asio::io_context &io,
+            std::shared_ptr<ConfigManager> &configMgr,
             int port,
             int socketMaxConnNum = 100000,
             int socketMaxMsgLen = 4096,
             int socketTimeout = 10) {
-        return std::make_shared<ConnServer>(io, port, socketMaxConnNum, socketMaxMsgLen, socketTimeout);
+        return std::make_shared<ConnServer>(io, configMgr, port, socketMaxConnNum, socketMaxMsgLen, socketTimeout);
     }
 };
 

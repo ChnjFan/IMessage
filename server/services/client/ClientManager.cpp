@@ -8,7 +8,6 @@
 void ClientManager::registerService(SERVICE_NAME serviceName, const std::string &target) {
     auto channel = grpc::CreateChannel(target, grpc::InsecureChannelCredentials());
     channels.insert({serviceName, channel});
-    serviceNameMap.insert({SERVICE_NAME::SERVICE_USER, "user"});
 }
 
 std::shared_ptr<grpc::Channel>& ClientManager::getChannel(SERVICE_NAME serviceName) {

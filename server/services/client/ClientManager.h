@@ -16,7 +16,7 @@ class ClientInfo;
 
 class ClientManager {
 public:
-    // ClientManager(/*config*/);
+
     void registerService(SERVICE_NAME serviceName, const std::string& target);
 
     std::shared_ptr<grpc::Channel>& getChannel(SERVICE_NAME serviceName);
@@ -24,8 +24,10 @@ public:
     std::string getServiceName(SERVICE_NAME serviceName);
 
 private:
-    std::unordered_map<SERVICE_NAME, std::string> serviceNameMap;
     std::unordered_map<SERVICE_NAME, std::shared_ptr<grpc::Channel>> channels;   // 管理 grpc 连接
+    std::unordered_map<SERVICE_NAME, std::string> serviceNameMap = {
+        {SERVICE_NAME::SERVICE_USER, "user"},
+    };
 };
 
 

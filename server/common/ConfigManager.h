@@ -55,9 +55,12 @@ typedef struct {
 
 class ConfigManager {
 public:
-    ConfigManager(CONFIG_TYPE configType);
+    explicit ConfigManager(CONFIG_TYPE configType);
 
     void parseConfig(CONFIG_TYPE configType, const std::function<void(ConfigManager*, std::shared_ptr<YAML::Node>&)> &parse);
+
+    [[nodiscard]] bool hasConfig(CONFIG_TYPE configType) const;
+    static bool hasConfigField(const std::shared_ptr<YAML::Node>& configNode, const std::string& fieldName);
 
     [[nodiscard]] MSG_GATEWAY_CONFIG* getMsgGatewayConfig() const;
     [[nodiscard]] RPC_SERVICE_CONFIG* getUserServiceConfig() const;
