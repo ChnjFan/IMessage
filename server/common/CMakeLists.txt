@@ -10,7 +10,10 @@ aux_source_directory(./ SRC_LIST)
 
 add_library(common SHARED ${SRC_LIST}
         ConfigManager.cpp
-        ConfigManager.h)
+        ConfigManager.h
+        Message.cpp)
+target_include_directories(common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_compile_definitions(common PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}/../")
 
 find_package(Boost REQUIRED COMPONENTS CONFIG)

@@ -4,6 +4,7 @@
 
 #include "Session.h"
 #include "ConnServer.h"
+#include "Message.h"
 
 Session::Session(const any_io_executor &ex, const std::weak_ptr<ConnServer> &server)
         : socket_(ex), state(SessionState::SESSION_IDLE), trick(0), platformID(0)
@@ -22,6 +23,18 @@ bool Session::send(const char *buffer, std::size_t bufferSize) {
         return false;
     }
     const auto message = std::make_shared<Message>(buffer, bufferSize);
+    writeMsgs.push_back(message);
+    if (!writeMsgs.empty()) {
+        doWrite();
+    }
+    return true;
+}
+
+bool Session::send(const std::string &buffer) {
+    if (SessionState::SESSION_DELETED == state) {
+        return false;
+    }
+    const auto message = std::make_shared<Message>(buffer.c_str(), buffer.size());
     writeMsgs.push_back(message);
     if (!writeMsgs.empty()) {
         doWrite();
@@ -60,9 +73,13 @@ std::string Session::getPeerIP() const {
 }
 
 void Session::close() {
-    socket_.shutdown(tcp::socket::shutdown_both);
-    socket_.close();
-    setState(SessionState::SESSION_DELETED);
+    try {
+        socket_.shutdown(tcp::socket::shutdown_both);
+        socket_.close();
+        setState(SessionState::SESSION_DELETED);
+    } catch (...) {
+        setState(SessionState::SESSION_DELETED);
+    }
 }
 
 void Session::readHeader() {
@@ -77,8 +94,8 @@ void Session::readHeader() {
                 setState(SessionState::SESSION_DELETED);
                 return;
             }
-            int len = 0;
-            memcpy(&len, readMsg->body(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
+            int32_t len = 0;
+            memcpy(&len, readMsg->header(), Message::MESSAGE_DEFAULT_HEADER_SIZE);
             boost::endian::big_to_native_inplace(len);
             // 消息长度超过缓冲区长度异常，与客户端断链
             if (len > readMsg->getBodySize()) {

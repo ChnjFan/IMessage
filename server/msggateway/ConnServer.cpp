@@ -27,7 +27,7 @@ void ConnServer::run() {
 
 void ConnServer::handleRequest(const SessionPtr& session, MessagePtr &message) {
     switch (session->getState()) {
-        case SessionState::SESSION_INIT:
+        case SessionState::SESSION_READY:
             authNewConnection(session, message);
             break;
         default:
@@ -54,14 +54,8 @@ void ConnServer::detectionTasks() {
 void ConnServer::handleUnauthSession() {
     for (auto it = unauthorizedSessions.begin(); it != unauthorizedSessions.end(); ) {
         SessionPtr &session = *it;
-        if (session->getState() >= SessionState::SESSION_READY) {
-            // 客户端用户密码认证过后生成token后会话认证成功，将认证过的会话建立客户端对象
-            ClientPtr client = Client::constructor(session);
-            clients.insert({client->getUserID(), client});
+        if (session->getState() >= SessionState::SESSION_IDLE) {
             it = unauthorizedSessions.erase(it);
-            --onlineUserConnNum;
-            session->setState(SessionState::SESSION_IDLE);
-            MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
         }
         else if (session->getState() == SessionState::SESSION_DELETED) {
             it = unauthorizedSessions.erase(it);
@@ -83,8 +77,7 @@ void ConnServer::handleUnauthSession() {
 
 void ConnServer::handleClients() {
     for (auto it = clients.begin(); it != clients.end(); ) {
-        ClientPtr client = it->second;
-        if (client->down()) {
+        if (const ClientPtr client = it->second; client->down()) {
             it = clients.erase(it);
         }
         else {
@@ -106,7 +99,7 @@ void ConnServer::handleNewConnection(const boost::system::error_code &ec, Sessio
             error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_OVERRUN,
                 std::string("The connection exceeds the maximum limit: " + std::to_string(socketMaxConnNum)));
         }
-        session->setState(SessionState::SESSION_INIT);
+        session->setState(SessionState::SESSION_READY);
         unauthorizedSessions.push_back(session);
         ++onlineUserConnNum;
         session->start();
@@ -121,11 +114,19 @@ void ConnServer::authNewConnection(const SessionPtr &session, const MessagePtr &
         error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
         return;
     }
-    UserClient client(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
-    USER_SERVICE_INFO *pUserInfo = UserClient::parseLoginRequest(message->body() + message->getMethod().size());
-    if (client.getAdminToken(pUserInfo->userID, pUserInfo->secret, &pUserInfo->token, &pUserInfo->expireTime)) {
+    UserClient userClient(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
+    USER_SERVICE_INFO *pUserInfo = UserClient::parseLoginRequest(message->body() + message->getMethod().length()+1);
+    if (userClient.getAdminToken(pUserInfo->userID, pUserInfo->secret, &pUserInfo->token, &pUserInfo->expireTime)) {
         session->setSessionInfo(pUserInfo);
-        session->setState(SessionState::SESSION_READY);
+        session->setState(SessionState::SESSION_IDLE);
+
+        ClientPtr client = Client::constructor(session);
+        clients.insert({client->getUserID(), client});
+        --onlineUserConnNum;
+        MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
+
+        // TODO:回复建链消息
+        session->send(pUserInfo->token);
     }
     else {
         error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, "Authentication failed");

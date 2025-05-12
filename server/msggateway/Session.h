@@ -16,10 +16,10 @@ using namespace boost::asio;
 using ip::tcp;
 
 enum class SessionState {
-    SESSION_INIT = 0,
-    SESSION_DELETED,
-    SESSION_READY,
-    SESSION_IDLE,
+    SESSION_INIT = 0,       // 初始化状态，会话为准备好接收消息
+    SESSION_DELETED,        // 会话删除，不能接收发送消息
+    SESSION_READY,          // 会话已连接，未进行认证，可以接收消息，不能推送消息
+    SESSION_IDLE,           // 会话空闲，可以接收或推送消息
 };
 
 class ConnServer;
@@ -33,6 +33,7 @@ public:
     void start();
 
     bool send(const char* buffer, std::size_t bufferSize);
+    bool send(const std::string& buffer);
 
     bool extend();
 

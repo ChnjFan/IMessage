@@ -5,6 +5,7 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <string>
 #include <memory>
 #include <boost/crc.hpp>
 #include <boost/endian/conversion.hpp>
@@ -95,22 +96,7 @@ public:
         return bodySize;
     }
 
-    bool decode() {
-        // TODO:消息解密
-
-        memcpy(&checkSum, pBuffer + bodyLen, MESSAGE_DEFAULT_HEADER_SIZE);
-        boost::endian::big_to_native_inplace(checkSum);
-
-        // 校验消息 crc
-        boost::crc_32_type crc32;
-        crc32.process_bytes(pBuffer, bodyLen);
-        if (checkSum != static_cast<int32_t>(crc32.checksum())) {
-            return false;
-        }
-
-        method = std::string(pBuffer);
-        return true;
-    }
+    bool decode();
 
     char* encode() {
         boost::endian::native_to_big_inplace(bodyLen);
