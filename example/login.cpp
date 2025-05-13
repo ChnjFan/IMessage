@@ -65,6 +65,23 @@ private:
     std::array<char, 1024> buf_;
 };
 
+void deleteSubTree(void *pRoot) {
+    void *pChild = nullptr;
+    void *pSibling = pRoot;
+
+    if (pRoot == nullptr) {
+        return;
+    }
+
+    do
+    {
+        pChild = getChild(pRoot);
+        deleteSubTree(pChild);
+    } while (pSibling = getSibling(pSibling));
+
+    delete pRoot;
+}
+
 int main() {
     boost::asio::io_context io_context;
     AsyncClient client(io_context, "127.0.0.1", "10000");

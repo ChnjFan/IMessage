@@ -74,6 +74,7 @@ std::string Session::getPeerIP() const {
 
 void Session::close() {
     try {
+        // 客户端主动断链后连接失效，不能重复释放
         socket_.shutdown(tcp::socket::shutdown_both);
         socket_.close();
         setState(SessionState::SESSION_DELETED);

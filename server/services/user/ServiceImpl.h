@@ -8,11 +8,11 @@
 #include <grpcpp/grpcpp.h>
 
 #include "AuthServiceImpl.h"
-#include "UserServiceConfig.h"
+#include "ConfigManager.h"
 
 class ServiceImpl final {
 public:
-    explicit ServiceImpl(const std::shared_ptr<UserServiceConfig>& config);
+    explicit ServiceImpl(const std::shared_ptr<ConfigManager>& config);
     ~ServiceImpl();
 
     void run(std::string& ip, int port);

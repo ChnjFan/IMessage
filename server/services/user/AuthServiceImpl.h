@@ -8,11 +8,11 @@
 #include <grpcpp/grpcpp.h>
 
 #include "auth/auth.grpc.pb.h"
-#include "UserServiceConfig.h"
+#include "ConfigManager.h"
 
 class AuthServiceImpl final : public user::auth::Auth::CallbackService {
 public:
-    explicit AuthServiceImpl(const std::shared_ptr<UserServiceConfig>& config);
+    explicit AuthServiceImpl(const std::shared_ptr<ConfigManager>& config);
 
     grpc::ServerUnaryReactor* getAdminToken(grpc::CallbackServerContext *context,
             const user::auth::getAdminTokenReq *request,
@@ -22,7 +22,7 @@ public:
             const user::auth::parseTokenReq *request,
             user::auth::parseTokenResp *response) override;
 private:
-    std::shared_ptr<UserServiceConfig> config;
+    std::shared_ptr<ConfigManager> config;
 };
 
 

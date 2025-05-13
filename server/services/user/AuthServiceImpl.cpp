@@ -8,14 +8,14 @@
 #define DEFAULT_ADMIN_TOKEN "admin_token_"
 #define DEFAULT_ADMIN_EXPIRE_TIME   36000
 
-AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<UserServiceConfig> &config) : config(config){
+AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<ConfigManager> &config) : config(config){
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerContext *context,
                                                           const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response) {
     class Reactor : public grpc::ServerUnaryReactor {
     public:
-        Reactor(const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response, const std::shared_ptr<UserServiceConfig> &config) {
+        Reactor(const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response, const std::shared_ptr<ConfigManager> &config) {
             //检查 userID 是否为管理员
             if (!isAdminUserID(config, request->userid())
                 || !isAdminSecret(config, request->secret())) {
@@ -25,20 +25,18 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
 
             //TODO:设置 admin token 和过期时间
             // token 根据 userID 生成
-            std::string token;
-            int64_t expireTime = 0;
 
             response->set_token(DEFAULT_ADMIN_TOKEN + request->userid());
             response->set_expiretimeseconds(DEFAULT_ADMIN_EXPIRE_TIME);
             Finish(grpc::Status::OK);
         }
 
-        static bool isAdminUserID(const std::shared_ptr<UserServiceConfig> &config, const std::string &userID) {
-            return (config->getAdminConfig()->userID.find(userID) != config->getAdminConfig()->userID.end());
+        static bool isAdminUserID(const std::shared_ptr<ConfigManager> &config, const std::string &userID) {
+            return (config->getUserServiceConfig()->adminUserID == userID);
         }
 
-        static bool isAdminSecret(const std::shared_ptr<UserServiceConfig> &config, const std::string &secret) {
-            return (config->getAdminConfig()->secret == secret);
+        static bool isAdminSecret(const std::shared_ptr<ConfigManager> &config, const std::string &secret) {
+            return (config->getUserServiceConfig()->adminSecret == secret);
         }
 
     private:

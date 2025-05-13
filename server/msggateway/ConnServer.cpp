@@ -16,7 +16,9 @@ ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr
       , onlineUserConnNum(0)
       , acceptor(io, tcp::endpoint(tcp::v4(), port))
       , taskTimer(io, chrono::seconds(1)) {
-    clientManager.registerService(SERVICE_NAME::SERVICE_USER, configMgr->getUserServiceConfig()->registerIP);
+    std::string userServiceTarget = configMgr->getUserServiceConfig()->serviceConfig.registerIP + ":"
+                                    + std::to_string(configMgr->getUserServiceConfig()->serviceConfig.ports[0]);
+    clientManager.registerService(SERVICE_NAME::SERVICE_USER, userServiceTarget);
     // 每秒定时执行服务器检测任务
     taskTimer.async_wait(std::bind(&ConnServer::detectionTasks, this));
 }

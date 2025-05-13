@@ -47,25 +47,24 @@ void loadLongConnConfig(MSG_GATEWAY_CONFIG *pConfig, YAML::Node &node) {
 std::shared_ptr<ConfigManager> loadConfig() {
     auto configMgr = std::make_shared<ConfigManager>(CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY);
     configMgr->parseConfig(CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY,
-            [](const ConfigManager *mgr, const std::shared_ptr<YAML::Node> &configNode) {
-                if (ConfigManager::hasConfigField(configNode, "rpc")) {
-                    YAML::Node rpcNode = (*configNode)["rpc"];
-                    loadRpcServiceConfig(&mgr->getMsgGatewayConfig()->serviceConfig, rpcNode);
-                }
+        [](const ConfigManager *mgr, const std::shared_ptr<YAML::Node> &configNode) {
+            if (ConfigManager::hasConfigField(configNode, "rpc")) {
+                YAML::Node rpcNode = (*configNode)["rpc"];
+                loadRpcServiceConfig(&mgr->getMsgGatewayConfig()->serviceConfig, rpcNode);
+            }
 
-                if (ConfigManager::hasConfigField(configNode, "longConnSvr")) {
-                    YAML::Node longConnNode = (*configNode)["longConnSvr"];
-                    loadLongConnConfig(mgr->getMsgGatewayConfig(), longConnNode);
-                }
+            if (ConfigManager::hasConfigField(configNode, "longConnSvr")) {
+                YAML::Node longConnNode = (*configNode)["longConnSvr"];
+                loadLongConnConfig(mgr->getMsgGatewayConfig(), longConnNode);
+            }
 
-                if (ConfigManager::hasConfigField(configNode, "listenIP")) {
-                    mgr->getMsgGatewayConfig()->listenIP = (*configNode)["listenIP"].as<std::string>();
-                }
-                else {
-                    mgr->getMsgGatewayConfig()->listenIP = "0.0.0.0";
-                }
-
-            });
+            if (ConfigManager::hasConfigField(configNode, "listenIP")) {
+                mgr->getMsgGatewayConfig()->listenIP = (*configNode)["listenIP"].as<std::string>();
+            }
+            else {
+                mgr->getMsgGatewayConfig()->listenIP = "0.0.0.0";
+            }
+        });
     return configMgr;
 }
 

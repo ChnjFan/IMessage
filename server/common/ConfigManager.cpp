@@ -55,7 +55,7 @@ MSG_GATEWAY_CONFIG* ConfigManager::getMsgGatewayConfig() const {
     return msgGatewayConfig.get();
 }
 
-RPC_SERVICE_CONFIG* ConfigManager::getUserServiceConfig() const {
+SERVICE_USER_CONFIG* ConfigManager::getUserServiceConfig() const {
     return userServiceConfig.get();
 }
 
@@ -89,9 +89,11 @@ void ConfigManager::initMsgGatewayConfig() {
 }
 
 void ConfigManager::initServiceUserConfig() {
-    userServiceConfig = std::make_unique<RPC_SERVICE_CONFIG>();
-    userServiceConfig->registerIP = "127.0.0.1";
-    userServiceConfig->listenIP = "0.0.0.0";
-    userServiceConfig->autoSetPorts = true;
-    userServiceConfig->ports.push_back(RPC_DEFAULT_PORT_USER_SERVICE);
+    userServiceConfig = std::make_unique<SERVICE_USER_CONFIG>();
+    userServiceConfig->adminUserID = "admin";
+    userServiceConfig->adminSecret = "admin";
+    userServiceConfig->serviceConfig.registerIP = "127.0.0.1";
+    userServiceConfig->serviceConfig.listenIP = "0.0.0.0";
+    userServiceConfig->serviceConfig.autoSetPorts = true;
+    userServiceConfig->serviceConfig.ports.push_back(RPC_DEFAULT_PORT_USER_SERVICE);
 }

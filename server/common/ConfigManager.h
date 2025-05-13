@@ -53,6 +53,13 @@ typedef struct {
     int socketTimeout;
 } MSG_GATEWAY_CONFIG;
 
+// 用户服务配置
+typedef struct {
+    RPC_SERVICE_CONFIG serviceConfig;
+    std::string adminUserID;
+    std::string adminSecret;
+} SERVICE_USER_CONFIG;
+
 class ConfigManager {
 public:
     explicit ConfigManager(CONFIG_TYPE configType);
@@ -63,7 +70,7 @@ public:
     static bool hasConfigField(const std::shared_ptr<YAML::Node>& configNode, const std::string& fieldName);
 
     [[nodiscard]] MSG_GATEWAY_CONFIG* getMsgGatewayConfig() const;
-    [[nodiscard]] RPC_SERVICE_CONFIG* getUserServiceConfig() const;
+    [[nodiscard]] SERVICE_USER_CONFIG* getUserServiceConfig() const;
 
 private:
     void initDefaultConfig(CONFIG_TYPE configType);
@@ -71,7 +78,7 @@ private:
     void initServiceUserConfig();
 
     std::unique_ptr<MSG_GATEWAY_CONFIG> msgGatewayConfig;
-    std::unique_ptr<RPC_SERVICE_CONFIG> userServiceConfig;
+    std::unique_ptr<SERVICE_USER_CONFIG> userServiceConfig;
 };
 
 

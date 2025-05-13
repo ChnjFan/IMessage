@@ -5,7 +5,7 @@
 #include "ServiceImpl.h"
 #include "UserServiceUtil.h"
 
-ServiceImpl::ServiceImpl(const std::shared_ptr<UserServiceConfig> &config) : authService(config) {
+ServiceImpl::ServiceImpl(const std::shared_ptr<ConfigManager> &config) : authService(config) {
 }
 
 ServiceImpl::~ServiceImpl() {
