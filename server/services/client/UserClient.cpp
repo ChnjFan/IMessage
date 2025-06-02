@@ -22,7 +22,7 @@ bool UserClient::getAdminToken(const std::string &userid, const std::string &sec
     std::mutex mu;
     std::condition_variable cv;
     stub->async()->getAdminToken(&context, &request, &response,
-        [&result, &done, &mu, &cv, response, token, expireTime](grpc::Status status) {
+        [&result, &done, &mu, &cv, &response, token, expireTime](grpc::Status status) {
             bool ret = false;
             if (!status.ok()) ret = false;
             else if (response.token().empty()) ret = false;

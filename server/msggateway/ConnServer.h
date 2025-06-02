@@ -39,7 +39,16 @@ private:
 
     void handler();
     void handleNewConnection(const boost::system::error_code &ec, SessionPtr &session);
-    void authNewConnection(const SessionPtr & session, const MessagePtr & message);
+
+    static std::string revertTokenToJson(const std::string & token);
+
+    /**
+     * @brief 新会话请求消息处理
+     * @param session 会话终端
+     * @param message 请求消息
+     * @note 新会话请求消息只能是终端用户认证或者用户注册消息
+     */
+    void newSessionRequest(const SessionPtr & session, const MessagePtr & message);
 
     void error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error);
 
@@ -55,7 +64,7 @@ private:
     int writeBufferSize;
 
     /* 客户端管理 */
-    int onlineUserConnNum;
+    int onlineSessionNum;
     tcp::acceptor acceptor;
     boost::object_pool<Client> clientPool;
     std::unordered_map<std::string, ClientPtr> clients;

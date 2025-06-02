@@ -10,6 +10,10 @@
 #include <boost/crc.hpp>
 #include <boost/endian/conversion.hpp>
 
+// 消息类型定义
+#define MESSAGE_REQUEST_REGISTER        "user.register"
+#define MESSAGE_REQUEST_AUTH            "user.auth"
+
 class Message;
 using MessagePtr = std::shared_ptr<Message>;
 

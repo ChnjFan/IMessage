@@ -2,9 +2,11 @@
 // Created by fan on 25-4-13.
 //
 
+#include <boost/json.hpp>
 #include "ConnServer.h"
 
 #include "UserClient.h"
+#include "Message.h"
 
 ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, const int port, const int socketMaxConnNum,
                        const int socketMaxMsgLen, const int socketTimeout)
@@ -13,7 +15,7 @@ ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr
       , socketMaxMsgLen(socketMaxMsgLen)
       , socketTimeout(socketTimeout)
       , writeBufferSize(DEFAULT_WRITE_BUFFER_SIZE)
-      , onlineUserConnNum(0)
+      , onlineSessionNum(0)
       , acceptor(io, tcp::endpoint(tcp::v4(), port))
       , taskTimer(io, chrono::seconds(1)) {
     std::string userServiceTarget = configMgr->getUserServiceConfig()->serviceConfig.registerIP + ":"
@@ -30,7 +32,7 @@ void ConnServer::run() {
 void ConnServer::handleRequest(const SessionPtr& session, MessagePtr &message) {
     switch (session->getState()) {
         case SessionState::SESSION_READY:
-            authNewConnection(session, message);
+            newSessionRequest(session, message);
             break;
         default:
             break;
@@ -61,7 +63,7 @@ void ConnServer::handleUnauthSession() {
         }
         else if (session->getState() == SessionState::SESSION_DELETED) {
             it = unauthorizedSessions.erase(it);
-            --onlineUserConnNum;
+            --onlineSessionNum;
         }
         else if (session->extend()) {
             // 会话建立连接 30s 没有认证结果判定为超期，超期会话回复客户端超期后直接释放断链，此时客户端需要重新建链
@@ -69,7 +71,7 @@ void ConnServer::handleUnauthSession() {
                 std::string("Session authentication timeout, IP: " + session->getPeerIP()));
             // TODO:将 IP 记录下来进行限流
             it = unauthorizedSessions.erase(it);
-            --onlineUserConnNum;
+            --onlineSessionNum;
         }
         else {
             ++it;
@@ -97,38 +99,56 @@ void ConnServer::handler() {
 void ConnServer::handleNewConnection(const boost::system::error_code &ec, SessionPtr &session) {
     if (!ec) {
         MSG_GATEWAY_SERVER_LOG_INFO("New connection from " + session->socket().remote_endpoint().address().to_string());
-        if (onlineUserConnNum >= socketMaxConnNum) {
+        if (onlineSessionNum >= socketMaxConnNum) {
             error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_OVERRUN,
                 std::string("The connection exceeds the maximum limit: " + std::to_string(socketMaxConnNum)));
         }
         session->setState(SessionState::SESSION_READY);
         unauthorizedSessions.push_back(session);
-        ++onlineUserConnNum;
+        ++onlineSessionNum;
         session->start();
     }
 
     handler();
 }
 
-void ConnServer::authNewConnection(const SessionPtr &session, const MessagePtr &message) {
-    if (message->getMethod() != "user.auth") {
-        // 消息异常，会话建链后没有认证
+std::string ConnServer::revertTokenToJson(const std::string &token) {
+    boost::json::object res;
+    res["token"] = token;
+    std::string tokenStr = boost::json::serialize(res);
+    MSG_GATEWAY_SERVER_LOG_DEBUG("IM server response: " + tokenStr);
+    return tokenStr;
+}
+
+/**
+ * @brief 新会话请求消息处理
+ * @param session 会话终端
+ * @param message 请求消息
+ * @note 新会话请求消息只能是终端用户认证或者用户注册消息
+ */
+void ConnServer::newSessionRequest(const SessionPtr &session, const MessagePtr &message) {
+    // 新会话的请求只能是注册消息或认证消息
+    if (message->getMethod() != MESSAGE_REQUEST_REGISTER && message->getMethod() != MESSAGE_REQUEST_AUTH) {
         error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
         return;
     }
+
     UserClient userClient(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
     USER_SERVICE_INFO *pUserInfo = UserClient::parseLoginRequest(message->body() + message->getMethod().length()+1);
+
     if (userClient.getAdminToken(pUserInfo->userID, pUserInfo->secret, &pUserInfo->token, &pUserInfo->expireTime)) {
         session->setSessionInfo(pUserInfo);
         session->setState(SessionState::SESSION_IDLE);
 
         ClientPtr client = Client::constructor(session);
+        client->setType(CLIENT_TYPE::ADMIN);
         clients.insert({client->getUserID(), client});
-        --onlineUserConnNum;
+        --onlineSessionNum;
         MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
 
         // TODO:回复建链消息
-        session->send(pUserInfo->token);
+        const std::string res = revertTokenToJson(pUserInfo->token);
+        session->send(res);
     }
     else {
         error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, "Authentication failed");

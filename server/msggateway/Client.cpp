@@ -22,3 +22,7 @@ bool Client::down() const {
 ClientPtr Client::constructor(SessionPtr session) {
     return std::make_shared<Client>(session);
 }
+
+void Client::setType(CLIENT_TYPE t_type) {
+    type = t_type;
+}

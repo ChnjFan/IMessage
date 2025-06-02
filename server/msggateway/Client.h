@@ -9,6 +9,11 @@
 
 #include "Session.h"
 
+enum class CLIENT_TYPE {
+    ADMIN = 1,
+    NORMAL = 2,
+};
+
 class Client;
 typedef std::shared_ptr<Client> ClientPtr;
 
@@ -24,10 +29,12 @@ public:
 
     static ClientPtr constructor(SessionPtr session);
 
+    void setType(CLIENT_TYPE t_type);
+
 private:
     /* 用户会话 */
     SessionPtr  conn;
-
+    CLIENT_TYPE type;
 };
 
 
