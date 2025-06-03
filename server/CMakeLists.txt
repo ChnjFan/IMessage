@@ -15,6 +15,9 @@ add_subdirectory(rpc)
 # 服务器目录
 add_subdirectory(msggateway)
 
+# 数据库模块
+add_subdirectory(storage)
+
 # 服务模块
 add_subdirectory(services/user)
 # 服务客户端
