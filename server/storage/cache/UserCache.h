@@ -15,7 +15,6 @@ public:
 
     explicit UserCache(int capacity = USER_CACHE_DEFAULT_SIZE);
 
-    void
 private:
     std::unordered_map<std::string, UserInfo> cache;
 };

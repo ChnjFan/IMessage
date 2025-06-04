@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.28)
 project(storage)
 
-include_directories(. ${THIRD_PARTY_PATH}/boost/include
+include_directories(. /usr/local/mysql-connector-c++/include/
+        ${THIRD_PARTY_PATH}/boost/include
         ${THIRD_PARTY_PATH}/log4cxx/include
         ${THIRD_PARTY_PATH}/yaml-cpp/include)
-link_directories(${THIRD_PARTY_PATH}/boost/lib
+link_directories(/usr/local/mysql-connector-c++/lib64
+        ${THIRD_PARTY_PATH}/boost/lib
         ${THIRD_PARTY_PATH}/yaml-cpp/lib)
 
 file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
