@@ -1,0 +1,8 @@
+# Username for database authentication
+username: IMessage
+# Password for database authentication
+password: IMessage123
+# Maximum number of connections in the connection pool
+maxPoolSize: 100
+# Maximum number of retry attempts for a failed database connection
+maxRetry: 10

@@ -9,6 +9,7 @@
 
 #include "auth/auth.grpc.pb.h"
 #include "ConfigManager.h"
+#include "controller/UserDatabase.h"
 
 class AuthServiceImpl final : public user::auth::Auth::CallbackService {
 public:
@@ -23,6 +24,7 @@ public:
             user::auth::parseTokenResp *response) override;
 private:
     std::shared_ptr<ConfigManager> config;
+    UserDatabase userDB;
 };
 
 

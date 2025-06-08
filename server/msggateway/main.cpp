@@ -45,7 +45,11 @@ void loadLongConnConfig(MSG_GATEWAY_CONFIG *pConfig, YAML::Node &node) {
 }
 
 std::shared_ptr<ConfigManager> loadConfig() {
-    auto configMgr = std::make_shared<ConfigManager>(CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY);
+    std::vector configTypes = {
+        CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY,
+        CONFIG_TYPE::CONFIG_TYPE_DB,
+    };
+    auto configMgr = std::make_shared<ConfigManager>(configTypes);
     configMgr->parseConfig(CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY,
         [](const ConfigManager *mgr, const std::shared_ptr<YAML::Node> &configNode) {
             if (ConfigManager::hasConfigField(configNode, "rpc")) {
@@ -63,6 +67,25 @@ std::shared_ptr<ConfigManager> loadConfig() {
             }
             else {
                 mgr->getMsgGatewayConfig()->listenIP = "0.0.0.0";
+            }
+        });
+    configMgr->parseConfig(CONFIG_TYPE::CONFIG_TYPE_DB,
+        [](const ConfigManager *mgr, const std::shared_ptr<YAML::Node> &configNode) {
+            DB_CONFIG *dbConfig = mgr->getDBConfig();
+            if (nullptr == dbConfig) {
+                return;
+            }
+            if (ConfigManager::hasConfigField(configNode, "username")) {
+                dbConfig->address = (*configNode)["address"].as<std::string>();
+            }
+            if (ConfigManager::hasConfigField(configNode, "password")) {
+                dbConfig->password = (*configNode)["password"].as<std::string>();
+            }
+            if (ConfigManager::hasConfigField(configNode, "maxPoolSize")) {
+                dbConfig->poolSize = (*configNode)["maxPoolSize"].as<int>();
+            }
+            if (ConfigManager::hasConfigField(configNode, "maxRetry")) {
+                dbConfig->retryNum = (*configNode)["maxRetry"].as<int>();
             }
         });
     return configMgr;

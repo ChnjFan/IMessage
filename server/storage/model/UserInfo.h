@@ -14,14 +14,14 @@
  */
 class UserInfo {
 public:
-    explicit UserInfo(std::string t_userID) : userID(std::move(t_userID)) {}
+    explicit UserInfo(const int t_userID) : userID(t_userID) {}
 
-    [[nodiscard]] std::string getUserID() const {
+    [[nodiscard]] int getUserID() const {
         return userID;
     }
 
-    void setUserID(std::string user_id) {
-        userID = std::move(user_id);
+    void setUserID(const int user_id) {
+        userID = user_id;
     }
 
     [[nodiscard]] std::string getNickName() const {
@@ -57,7 +57,7 @@ public:
     }
 
 private:
-    std::string userID;
+    int userID;
     std::string nickName;
     std::string secret;
     std::string faceURL;    // 头像地址

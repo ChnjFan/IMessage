@@ -8,14 +8,17 @@
 #define DEFAULT_ADMIN_TOKEN "admin_token_"
 #define DEFAULT_ADMIN_EXPIRE_TIME   36000
 
-AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<ConfigManager> &config) : config(config){
+AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<ConfigManager> &config)
+    : config(config)
+    , userDB(config->getDBConfig()){
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerContext *context,
-                                                          const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response) {
+                                const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response) {
     class Reactor : public grpc::ServerUnaryReactor {
     public:
-        Reactor(const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response, const std::shared_ptr<ConfigManager> &config) {
+        Reactor(AuthServiceImpl& service, const user::auth::getAdminTokenReq *request,
+                user::auth::getAdminTokenResp *response, const std::shared_ptr<ConfigManager> &config) {
             //检查 userID 是否为管理员
             if (!isAdminUserID(config, request->userid())
                 || !isAdminSecret(config, request->secret())) {
@@ -49,7 +52,7 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
             USER_SERVICE_SERVER_LOG_INFO("user::auth::getAdminToken Cancelled");
         }
     };
-    return new Reactor(request, response, config);
+    return new Reactor(*this, request, response, config);
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::parseToken(grpc::CallbackServerContext *context,

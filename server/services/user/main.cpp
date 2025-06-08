@@ -36,6 +36,25 @@ std::shared_ptr<ConfigManager> loadConfig() {
                 loadRpcServiceConfig(&mgr->getUserServiceConfig()->serviceConfig, rpcNode);
             }
         });
+    config->parseConfig(CONFIG_TYPE::CONFIG_TYPE_DB,
+        [](const ConfigManager *mgr, const std::shared_ptr<YAML::Node> &configNode) {
+            DB_CONFIG *dbConfig = mgr->getDBConfig();
+            if (nullptr == dbConfig) {
+                return;
+            }
+            if (ConfigManager::hasConfigField(configNode, "username")) {
+                dbConfig->address = (*configNode)["address"].as<std::string>();
+            }
+            if (ConfigManager::hasConfigField(configNode, "password")) {
+                dbConfig->password = (*configNode)["password"].as<std::string>();
+            }
+            if (ConfigManager::hasConfigField(configNode, "maxPoolSize")) {
+                dbConfig->poolSize = (*configNode)["maxPoolSize"].as<int>();
+            }
+            if (ConfigManager::hasConfigField(configNode, "maxRetry")) {
+                dbConfig->retryNum = (*configNode)["maxRetry"].as<int>();
+            }
+        });
     return config;
 }
 

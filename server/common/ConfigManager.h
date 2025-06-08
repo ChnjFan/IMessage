@@ -26,12 +26,14 @@ enum class CONFIG_TYPE {
     CONFIG_TYPE_NONE,
     CONFIG_TYPE_MSG_GATEWAY,
     CONFIG_TYPE_SERVICE_USER,
+    CONFIG_TYPE_DB,
 };
 
 inline std::unordered_map<CONFIG_TYPE, std::string> CONFIGTYPE_FILE_MAP = {
     {CONFIG_TYPE::CONFIG_TYPE_NONE, ""},
     {CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY, "msggateway.yaml"},
     {CONFIG_TYPE::CONFIG_TYPE_SERVICE_USER, "userservice.yaml"},
+    {CONFIG_TYPE::CONFIG_TYPE_DB, "mysql.yaml"},
 };
 
 // rpc 服务配置
@@ -60,9 +62,19 @@ typedef struct {
     std::string adminSecret;
 } SERVICE_USER_CONFIG;
 
+// 数据库配置
+typedef struct {
+    std::string address;
+    std::string username;
+    std::string password;
+    int poolSize;
+    int retryNum;
+} DB_CONFIG;
+
 class ConfigManager {
 public:
     explicit ConfigManager(CONFIG_TYPE configType);
+    explicit ConfigManager(const std::vector<CONFIG_TYPE> &configTypes);
 
     void parseConfig(CONFIG_TYPE configType, const std::function<void(ConfigManager*, std::shared_ptr<YAML::Node>&)> &parse);
 
@@ -71,14 +83,17 @@ public:
 
     [[nodiscard]] MSG_GATEWAY_CONFIG* getMsgGatewayConfig() const;
     [[nodiscard]] SERVICE_USER_CONFIG* getUserServiceConfig() const;
+    [[nodiscard]] DB_CONFIG* getDBConfig() const;
 
 private:
     void initDefaultConfig(CONFIG_TYPE configType);
     void initMsgGatewayConfig();
     void initServiceUserConfig();
+    void initDBConfig();
 
     std::unique_ptr<MSG_GATEWAY_CONFIG> msgGatewayConfig;
     std::unique_ptr<SERVICE_USER_CONFIG> userServiceConfig;
+    std::unique_ptr<DB_CONFIG> dbConfig;
 };
 
 

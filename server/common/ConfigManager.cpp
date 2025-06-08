@@ -20,12 +20,18 @@ private:
     std::shared_ptr<YAML::Node> config;
 };
 
-ConfigManager::ConfigManager(CONFIG_TYPE configType) {
+ConfigManager::ConfigManager(const CONFIG_TYPE configType) {
     initDefaultConfig(configType);
 }
 
-void ConfigManager::parseConfig(CONFIG_TYPE configType,
-    const std::function<void(ConfigManager*, std::shared_ptr<YAML::Node> &)> &parse) {
+ConfigManager::ConfigManager(const std::vector<CONFIG_TYPE> &configTypes) {
+    for (const auto configType : configTypes) {
+        initDefaultConfig(configType);
+    }
+}
+
+void ConfigManager::parseConfig(const CONFIG_TYPE configType,
+                                const std::function<void(ConfigManager*, std::shared_ptr<YAML::Node> &)> &parse) {
     try {
         Config config(CONFIGTYPE_FILE_MAP[configType]);
         parse(this, config.getConfig());
@@ -40,6 +46,9 @@ bool ConfigManager::hasConfig(const CONFIG_TYPE configType) const {
             break;
         case CONFIG_TYPE::CONFIG_TYPE_SERVICE_USER:
             result = (userServiceConfig != nullptr);
+            break;
+        case CONFIG_TYPE::CONFIG_TYPE_DB:
+            result = (dbConfig != nullptr);
             break;
         default:
             break;
@@ -59,7 +68,11 @@ SERVICE_USER_CONFIG* ConfigManager::getUserServiceConfig() const {
     return userServiceConfig.get();
 }
 
-void ConfigManager::initDefaultConfig(CONFIG_TYPE configType) {
+DB_CONFIG* ConfigManager::getDBConfig() const {
+    return dbConfig.get();
+}
+
+void ConfigManager::initDefaultConfig(const CONFIG_TYPE configType) {
     switch (configType) {
         case CONFIG_TYPE::CONFIG_TYPE_MSG_GATEWAY:
             initMsgGatewayConfig();
@@ -68,6 +81,8 @@ void ConfigManager::initDefaultConfig(CONFIG_TYPE configType) {
         case CONFIG_TYPE::CONFIG_TYPE_SERVICE_USER:
             initServiceUserConfig();
             break;
+        case CONFIG_TYPE::CONFIG_TYPE_DB:
+            initDBConfig();
         default:
             break;
     }
@@ -96,4 +111,13 @@ void ConfigManager::initServiceUserConfig() {
     userServiceConfig->serviceConfig.listenIP = "0.0.0.0";
     userServiceConfig->serviceConfig.autoSetPorts = true;
     userServiceConfig->serviceConfig.ports.push_back(RPC_DEFAULT_PORT_USER_SERVICE);
+}
+
+void ConfigManager::initDBConfig() {
+    dbConfig = std::make_unique<DB_CONFIG>();
+    dbConfig->address = "";
+    dbConfig->username = "";
+    dbConfig->password = "";
+    dbConfig->poolSize = 0;
+    dbConfig->retryNum = 0;
 }

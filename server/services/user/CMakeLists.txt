@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.28)
 project(service_user)
 
-include_directories(./ ${PROJECT_SERVER_PATH}/common ${PROJECT_SERVER_PATH}/rpc)
+include_directories(./
+        ${PROJECT_SERVER_PATH}/common
+        ${PROJECT_SERVER_PATH}/rpc
+        ${PROJECT_SERVER_PATH}/storage)
 include_directories(${THIRD_PARTY_PATH}/boost/include
         ${THIRD_PARTY_PATH}/yaml-cpp/include
         ${THIRD_PARTY_PATH}/grpc/include)
@@ -25,4 +28,4 @@ find_package(yaml-cpp REQUIRED)
 find_package(protobuf REQUIRED COMPONENTS CONFIG)
 find_package(grpc REQUIRED COMPONENTS CONFIG)
 
-target_link_libraries(service_user PRIVATE ${Boost_LIBRARIES} gRPC::grpc++ common rpc yaml-cpp)
+target_link_libraries(service_user PRIVATE ${Boost_LIBRARIES} gRPC::grpc++ common storage rpc yaml-cpp)
