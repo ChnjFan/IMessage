@@ -41,8 +41,34 @@ std::vector<UserInfo *> UserDatabase::find(const std::vector<int> &userIDs) {
     std::vector<UserInfo *> users;
     try {
         const DBConnPool::DB_CONNECTION_PTR conn = dbConnPool.getConnection();
-        //TODO:查询DB
+        std::ostringstream oss;
+        oss << "SELECT * FROM UserInfo WHERE userID IN (";
+        for (int i = 0; i < userIDs.size(); i++) {
+            if (i == 0) oss << "?";
+            else oss << ", ?";
+        }
+        oss << ")";
+
+        const std::unique_ptr<sql::PreparedStatement> state(conn->prepareStatement(oss.str()));
+        for (int i = 0; i < userIDs.size(); i++) {
+            state->setInt(i+1, userIDs[i]);
+        }
+
+        const std::unique_ptr<sql::ResultSet> res(state->executeQuery());
+        while (res->next()) {
+            const int userID = res->getInt("userID");
+            auto userInfo = new UserInfo(userID);
+            userInfo->setNickName(res->getString("nickName"));
+            userInfo->setSecret(res->getString("secret"));
+            userInfo->setFaceURL(res->getString("faceURL"));
+            userInfo->setEx(res->getString("ex"));
+            users.push_back(userInfo);
+        }
+        return users;
     } catch (...) {
+        for (const auto userInfo: users) {
+            delete userInfo;
+        }
         return {};
     }
 }
