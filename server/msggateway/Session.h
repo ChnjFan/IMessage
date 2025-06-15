@@ -52,7 +52,7 @@ private:
     void doRead();
     void doWrite();
 
-    const int SESSION_DEFAULT_TIMEOUT = 30;
+    const int SESSION_DEFAULT_TIMEOUT = 300;
     tcp::socket socket_;
     SessionState state;
     /* 操作时间戳，用于操作超时检测，单位秒 */

@@ -31,6 +31,9 @@ void ConnServer::run() {
 
 void ConnServer::handleRequest(const SessionPtr& session, MessagePtr &message) {
     switch (session->getState()) {
+        case SessionState::SESSION_INIT:
+            helloRequest(session, message);
+            break;
         case SessionState::SESSION_READY:
             newSessionRequest(session, message);
             break;
@@ -92,24 +95,24 @@ void ConnServer::handleClients() {
 
 void ConnServer::handler() {
     SessionPtr session = std::make_shared<Session>(acceptor.get_executor(), shared_from_this());
-    acceptor.async_accept(session->socket(), std::bind(
-        &ConnServer::handleNewConnection, this, boost::asio::placeholders::error, session));
-}
-
-void ConnServer::handleNewConnection(const boost::system::error_code &ec, SessionPtr &session) {
-    if (!ec) {
-        MSG_GATEWAY_SERVER_LOG_INFO("New connection from " + session->socket().remote_endpoint().address().to_string());
-        if (onlineSessionNum >= socketMaxConnNum) {
-            error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_OVERRUN,
-                std::string("The connection exceeds the maximum limit: " + std::to_string(socketMaxConnNum)));
+    acceptor.async_accept(session->socket(), [this, session](const boost::system::error_code &errCode) {
+        if (errCode) {
+            MSG_GATEWAY_SERVER_LOG_WARN("Client conn error: " + errCode.message());
         }
-        session->setState(SessionState::SESSION_READY);
-        unauthorizedSessions.push_back(session);
-        ++onlineSessionNum;
-        session->start();
-    }
+        else {
+            MSG_GATEWAY_SERVER_LOG_INFO("New connection from " + session->socket().remote_endpoint().address().to_string());
+            if (onlineSessionNum >= socketMaxConnNum) {
+                error(session, SERVER_RETURN_CODE::SERVER_RETURN_SESSION_OVERRUN,
+                      std::string("The connection exceeds the maximum limit: " + std::to_string(socketMaxConnNum)));
+            }
+            session->setState(SessionState::SESSION_INIT);
+            unauthorizedSessions.push_back(session);
+            ++onlineSessionNum;
+            session->start();
+        }
 
-    handler();
+        handler();
+    });
 }
 
 std::string ConnServer::revertTokenToJson(const std::string &token) {
@@ -118,6 +121,20 @@ std::string ConnServer::revertTokenToJson(const std::string &token) {
     std::string tokenStr = boost::json::serialize(res);
     MSG_GATEWAY_SERVER_LOG_DEBUG("IM server response: " + tokenStr);
     return tokenStr;
+}
+
+/**
+ * @brief hello 报文处理
+ * @param session 会话终端
+ * @param message 请求消息
+ * @note 客户端成功建链后立即发送 hello 报文，会话状态转换为 READY 可以接收客户端登录注册消息
+ */
+void ConnServer::helloRequest(const SessionPtr &session, const MessagePtr &message) {
+    if (message->getMethod() != MESSAGE_REQUEST_HELLO) {
+        error(session, SERVER_RETURN_CODE::CLIENT_RETURN_REQUEST_ERROR, std::string("Client request error"));
+        return;
+    }
+    session->setState(SessionState::SESSION_READY);
 }
 
 /**

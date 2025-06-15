@@ -11,6 +11,7 @@
 #include <boost/endian/conversion.hpp>
 
 // 消息类型定义
+#define MESSAGE_REQUEST_HELLO           "session.hello"
 #define MESSAGE_REQUEST_REGISTER        "user.register"
 #define MESSAGE_REQUEST_AUTH            "user.auth"
 

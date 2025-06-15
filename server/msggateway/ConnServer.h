@@ -38,10 +38,16 @@ private:
     void handleClients();
 
     void handler();
-    void handleNewConnection(const boost::system::error_code &ec, SessionPtr &session);
 
     static std::string revertTokenToJson(const std::string & token);
 
+    /**
+     * @brief hello 报文处理
+     * @param session 会话终端
+     * @param message 请求消息
+     * @note 客户端成功建链后立即发送 hello 报文，会话状态转换为 READY 可以接收客户端登录注册消息
+     */
+    void helloRequest(const SessionPtr & session, const MessagePtr & message);
     /**
      * @brief 新会话请求消息处理
      * @param session 会话终端
