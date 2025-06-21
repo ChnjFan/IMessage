@@ -9,9 +9,11 @@
 #include <memory>
 #include <boost/crc.hpp>
 #include <boost/endian/conversion.hpp>
+#include "Returncode.h"
 
 // 消息类型定义
-#define MESSAGE_REQUEST_HELLO           "session.hello"
+#define MESSAGE_REQUEST_HELLO           "gateway.hello"
+
 #define MESSAGE_REQUEST_REGISTER        "user.register"
 #define MESSAGE_REQUEST_AUTH            "user.auth"
 
@@ -115,11 +117,19 @@ public:
         return method;
     }
 
+    char *getMessage() {
+        return body() + getMethod().length() + 1;
+    }
+
     void clear() {
         bodyLen = 0;
         method.clear();
         checkSum = 0;
     }
+
+    static std::string responseFormat(SERVER_RETURN_CODE code, const std::string& message,
+                                            const std::string& detail = "",
+                                            const std::unordered_map<std::string, std::string>& data = {});
 
 private:
 

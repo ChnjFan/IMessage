@@ -15,9 +15,11 @@ class AuthServiceImpl final : public user::auth::Auth::CallbackService {
 public:
     explicit AuthServiceImpl(const std::shared_ptr<ConfigManager>& config);
 
-    grpc::ServerUnaryReactor* getAdminToken(grpc::CallbackServerContext *context,
-            const user::auth::getAdminTokenReq *request,
-            user::auth::getAdminTokenResp *response) override;
+    UserDatabase& getUserDatabase();
+
+    grpc::ServerUnaryReactor* getUserToken(grpc::CallbackServerContext *context,
+            const user::auth::getUserTokenReq *request,
+            user::auth::getUserTokenResp *response) override;
 
     grpc::ServerUnaryReactor* parseToken(grpc::CallbackServerContext *context,
             const user::auth::parseTokenReq *request,

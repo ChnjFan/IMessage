@@ -43,15 +43,25 @@ bool Session::send(const std::string &buffer) {
 }
 
 bool Session::extend() {
-    if (trick > SESSION_DEFAULT_TIMEOUT) {
-        return true;
-    }
     ++trick;
-    return false;
+    switch (state) {
+        case SessionState::SESSION_INIT:
+            return (trick > SESSION_HELLO_TIMEOUT);
+        case SessionState::SESSION_DELETED:
+            return true;
+        case SessionState::SESSION_IDLE:
+            return (trick > SESSION_DEFAULT_TIMEOUT);
+        default:
+            return true;
+    }
 }
 
 void Session::setState(SessionState s) {
     state = s;
+}
+
+void Session::setPlatform(const int platform) {
+    platformID = platform;
 }
 
 void Session::setSessionInfo(const USER_SERVICE_INFO *pInfo) {

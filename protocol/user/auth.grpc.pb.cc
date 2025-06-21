@@ -23,8 +23,9 @@ namespace user {
 namespace auth {
 
 static const char* Auth_method_names[] = {
-  "/user.auth.Auth/getAdminToken",
+  "/user.auth.Auth/getUserToken",
   "/user.auth.Auth/parseToken",
+  "/user.auth.Auth/registerUer",
 };
 
 std::unique_ptr< Auth::Stub> Auth::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -34,52 +35,76 @@ std::unique_ptr< Auth::Stub> Auth::NewStub(const std::shared_ptr< ::grpc::Channe
 }
 
 Auth::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_getAdminToken_(Auth_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_getUserToken_(Auth_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_parseToken_(Auth_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_registerUer_(Auth_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status Auth::Stub::getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::user::auth::getAdminTokenResp* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_getAdminToken_, context, request, response);
+::grpc::Status Auth::Stub::getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::user::auth::getUserTokenResp* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_getUserToken_, context, request, response);
 }
 
-void Auth::Stub::async::getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_getAdminToken_, context, request, response, std::move(f));
+void Auth::Stub::async::getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_getUserToken_, context, request, response, std::move(f));
 }
 
-void Auth::Stub::async::getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_getAdminToken_, context, request, response, reactor);
+void Auth::Stub::async::getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_getUserToken_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>* Auth::Stub::PrepareAsyncgetAdminTokenRaw(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::user::auth::getAdminTokenResp, ::user::auth::getAdminTokenReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_getAdminToken_, context, request);
+::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>* Auth::Stub::PrepareAsyncgetUserTokenRaw(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::user::auth::getUserTokenResp, ::user::auth::getUserTokenReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_getUserToken_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>* Auth::Stub::AsyncgetAdminTokenRaw(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>* Auth::Stub::AsyncgetUserTokenRaw(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncgetAdminTokenRaw(context, request, cq);
+    this->PrepareAsyncgetUserTokenRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status Auth::Stub::parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::user::auth::parseTokenResp* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::user::auth::parseTokenReq, ::user::auth::parseTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_parseToken_, context, request, response);
+::grpc::Status Auth::Stub::parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::user::auth::registerUserResp* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::user::auth::parseTokenReq, ::user::auth::registerUserResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_parseToken_, context, request, response);
 }
 
-void Auth::Stub::async::parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::user::auth::parseTokenReq, ::user::auth::parseTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_parseToken_, context, request, response, std::move(f));
+void Auth::Stub::async::parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::user::auth::parseTokenReq, ::user::auth::registerUserResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_parseToken_, context, request, response, std::move(f));
 }
 
-void Auth::Stub::async::parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response, ::grpc::ClientUnaryReactor* reactor) {
+void Auth::Stub::async::parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_parseToken_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>* Auth::Stub::PrepareAsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::user::auth::parseTokenResp, ::user::auth::parseTokenReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_parseToken_, context, request);
+::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* Auth::Stub::PrepareAsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::user::auth::registerUserResp, ::user::auth::parseTokenReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_parseToken_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>* Auth::Stub::AsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* Auth::Stub::AsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncparseTokenRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Auth::Stub::registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::user::auth::registerUserResp* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::user::auth::registerUserReq, ::user::auth::registerUserResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_registerUer_, context, request, response);
+}
+
+void Auth::Stub::async::registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::user::auth::registerUserReq, ::user::auth::registerUserResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_registerUer_, context, request, response, std::move(f));
+}
+
+void Auth::Stub::async::registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_registerUer_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* Auth::Stub::PrepareAsyncregisterUerRaw(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::user::auth::registerUserResp, ::user::auth::registerUserReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_registerUer_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* Auth::Stub::AsyncregisterUerRaw(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncregisterUerRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -88,36 +113,53 @@ Auth::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Auth_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< Auth::Service, ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< Auth::Service, ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Auth::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::user::auth::getAdminTokenReq* req,
-             ::user::auth::getAdminTokenResp* resp) {
-               return service->getAdminToken(ctx, req, resp);
+             const ::user::auth::getUserTokenReq* req,
+             ::user::auth::getUserTokenResp* resp) {
+               return service->getUserToken(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Auth_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< Auth::Service, ::user::auth::parseTokenReq, ::user::auth::parseTokenResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< Auth::Service, ::user::auth::parseTokenReq, ::user::auth::registerUserResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Auth::Service* service,
              ::grpc::ServerContext* ctx,
              const ::user::auth::parseTokenReq* req,
-             ::user::auth::parseTokenResp* resp) {
+             ::user::auth::registerUserResp* resp) {
                return service->parseToken(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Auth_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Auth::Service, ::user::auth::registerUserReq, ::user::auth::registerUserResp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Auth::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::user::auth::registerUserReq* req,
+             ::user::auth::registerUserResp* resp) {
+               return service->registerUer(ctx, req, resp);
              }, this)));
 }
 
 Auth::Service::~Service() {
 }
 
-::grpc::Status Auth::Service::getAdminToken(::grpc::ServerContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response) {
+::grpc::Status Auth::Service::getUserToken(::grpc::ServerContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status Auth::Service::parseToken(::grpc::ServerContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response) {
+::grpc::Status Auth::Service::parseToken(::grpc::ServerContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Auth::Service::registerUer(::grpc::ServerContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response) {
   (void) context;
   (void) request;
   (void) response;

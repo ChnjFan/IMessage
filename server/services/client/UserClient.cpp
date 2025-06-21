@@ -12,17 +12,17 @@ UserClient::UserClient(const std::shared_ptr<grpc::Channel> &channel)
 bool UserClient::getAdminToken(const std::string &userid, const std::string &secret, std::string *token,
         int64_t *expireTime) {
     grpc::ClientContext context;
-    user::auth::getAdminTokenReq request;
+    user::auth::getUserTokenReq request;
     request.set_userid(userid);
     request.set_secret(secret);
 
-    user::auth::getAdminTokenResp response;
+    user::auth::getUserTokenResp response;
     bool result = false;
     bool done = false;
     std::mutex mu;
     std::condition_variable cv;
-    stub->async()->getAdminToken(&context, &request, &response,
-        [&result, &done, &mu, &cv, &response, token, expireTime](grpc::Status status) {
+    stub->async()->getUserToken(&context, &request, &response,
+        [&result, &done, &mu, &cv, &response, token, expireTime](const grpc::Status &status) {
             bool ret = false;
             if (!status.ok()) ret = false;
             else if (response.token().empty()) ret = false;
@@ -31,12 +31,12 @@ bool UserClient::getAdminToken(const std::string &userid, const std::string &sec
                 *expireTime = response.expiretimeseconds();
                 ret = true;
             }
-            std::lock_guard<std::mutex> lock(mu);
+            std::lock_guard lock(mu);
             result = ret;
             done = true;
             cv.notify_one();
         });
-    std::unique_lock<std::mutex> lock(mu);
+    std::unique_lock lock(mu);
     cv.wait(lock, [&done] { return done; });
     return result;
 }
@@ -47,4 +47,17 @@ USER_SERVICE_INFO* UserClient::parseLoginRequest(const char *request) {
     response->userID = json.at("userID").as_string();
     response->secret = json.at("secret").as_string();
     return response;
+}
+
+USER_SERVICE_INFO * UserClient::parseRegisterRequest(const char *request) {
+    auto *response = new USER_SERVICE_INFO();
+    boost::json::value json = boost::json::parse(request);
+    response->userID = json.at("userID").as_string();
+    response->nickName = json.at("nickName").as_string();
+    response->faceURL = json.at("faceURL").as_string();
+    return response;
+}
+
+bool UserClient::isAdminID(const std::string &userID) {
+    return userID == USER_CLIENT_ADMIN_ID;
 }

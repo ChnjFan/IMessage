@@ -17,4 +17,4 @@ find_package(Boost REQUIRED COMPONENTS CONFIG)
 find_package(log4cxx REQUIRED COMPONENTS log4cxx)
 find_package(yaml-cpp REQUIRED)
 
-target_link_libraries(common PRIVATE ${Boost_LIBRARIES} log4cxx yaml-cpp)
+target_link_libraries(common PRIVATE ${Boost_LIBRARIES} log4cxx yaml-cpp boost_json)

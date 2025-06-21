@@ -37,65 +37,87 @@ class Auth final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    // 获取管理员 token
-    virtual ::grpc::Status getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::user::auth::getAdminTokenResp* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getAdminTokenResp>> AsyncgetAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getAdminTokenResp>>(AsyncgetAdminTokenRaw(context, request, cq));
+    // 获取用户 token
+    virtual ::grpc::Status getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::user::auth::getUserTokenResp* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getUserTokenResp>> AsyncgetUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getUserTokenResp>>(AsyncgetUserTokenRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getAdminTokenResp>> PrepareAsyncgetAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getAdminTokenResp>>(PrepareAsyncgetAdminTokenRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getUserTokenResp>> PrepareAsyncgetUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getUserTokenResp>>(PrepareAsyncgetUserTokenRaw(context, request, cq));
     }
     // 解析 token
-    virtual ::grpc::Status parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::user::auth::parseTokenResp* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::parseTokenResp>> AsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::parseTokenResp>>(AsyncparseTokenRaw(context, request, cq));
+    virtual ::grpc::Status parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::user::auth::registerUserResp* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>> AsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>>(AsyncparseTokenRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::parseTokenResp>> PrepareAsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::parseTokenResp>>(PrepareAsyncparseTokenRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>> PrepareAsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>>(PrepareAsyncparseTokenRaw(context, request, cq));
+    }
+    // 注册用户
+    virtual ::grpc::Status registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::user::auth::registerUserResp* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>> AsyncregisterUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>>(AsyncregisterUerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>> PrepareAsyncregisterUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>>(PrepareAsyncregisterUerRaw(context, request, cq));
     }
     class async_interface {
      public:
       virtual ~async_interface() {}
-      // 获取管理员 token
-      virtual void getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // 获取用户 token
+      virtual void getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // 解析 token
-      virtual void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // 注册用户
+      virtual void registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getAdminTokenResp>* AsyncgetAdminTokenRaw(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getAdminTokenResp>* PrepareAsyncgetAdminTokenRaw(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::parseTokenResp>* AsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::parseTokenResp>* PrepareAsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getUserTokenResp>* AsyncgetUserTokenRaw(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::getUserTokenResp>* PrepareAsyncgetUserTokenRaw(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>* AsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>* PrepareAsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>* AsyncregisterUerRaw(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::user::auth::registerUserResp>* PrepareAsyncregisterUerRaw(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::user::auth::getAdminTokenResp* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>> AsyncgetAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>>(AsyncgetAdminTokenRaw(context, request, cq));
+    ::grpc::Status getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::user::auth::getUserTokenResp* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>> AsyncgetUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>>(AsyncgetUserTokenRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>> PrepareAsyncgetAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>>(PrepareAsyncgetAdminTokenRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>> PrepareAsyncgetUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>>(PrepareAsyncgetUserTokenRaw(context, request, cq));
     }
-    ::grpc::Status parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::user::auth::parseTokenResp* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>> AsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>>(AsyncparseTokenRaw(context, request, cq));
+    ::grpc::Status parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::user::auth::registerUserResp* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>> AsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>>(AsyncparseTokenRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>> PrepareAsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>>(PrepareAsyncparseTokenRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>> PrepareAsyncparseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>>(PrepareAsyncparseTokenRaw(context, request, cq));
+    }
+    ::grpc::Status registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::user::auth::registerUserResp* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>> AsyncregisterUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>>(AsyncregisterUerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>> PrepareAsyncregisterUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>>(PrepareAsyncregisterUerRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
-      void getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response, std::function<void(::grpc::Status)>) override;
-      void getAdminToken(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response, std::function<void(::grpc::Status)>) override;
-      void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response, std::function<void(::grpc::Status)>) override;
+      void getUserToken(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response, std::function<void(::grpc::Status)>) override;
+      void parseToken(::grpc::ClientContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response, std::function<void(::grpc::Status)>) override;
+      void registerUer(::grpc::ClientContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -107,12 +129,15 @@ class Auth final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>* AsyncgetAdminTokenRaw(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::user::auth::getAdminTokenResp>* PrepareAsyncgetAdminTokenRaw(::grpc::ClientContext* context, const ::user::auth::getAdminTokenReq& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>* AsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::user::auth::parseTokenResp>* PrepareAsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::internal::RpcMethod rpcmethod_getAdminToken_;
+    ::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>* AsyncgetUserTokenRaw(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::user::auth::getUserTokenResp>* PrepareAsyncgetUserTokenRaw(::grpc::ClientContext* context, const ::user::auth::getUserTokenReq& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* AsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* PrepareAsyncparseTokenRaw(::grpc::ClientContext* context, const ::user::auth::parseTokenReq& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* AsyncregisterUerRaw(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::user::auth::registerUserResp>* PrepareAsyncregisterUerRaw(::grpc::ClientContext* context, const ::user::auth::registerUserReq& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_getUserToken_;
     const ::grpc::internal::RpcMethod rpcmethod_parseToken_;
+    const ::grpc::internal::RpcMethod rpcmethod_registerUer_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -120,28 +145,30 @@ class Auth final {
    public:
     Service();
     virtual ~Service();
-    // 获取管理员 token
-    virtual ::grpc::Status getAdminToken(::grpc::ServerContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response);
+    // 获取用户 token
+    virtual ::grpc::Status getUserToken(::grpc::ServerContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response);
     // 解析 token
-    virtual ::grpc::Status parseToken(::grpc::ServerContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response);
+    virtual ::grpc::Status parseToken(::grpc::ServerContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response);
+    // 注册用户
+    virtual ::grpc::Status registerUer(::grpc::ServerContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response);
   };
   template <class BaseClass>
-  class WithAsyncMethod_getAdminToken : public BaseClass {
+  class WithAsyncMethod_getUserToken : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_getAdminToken() {
+    WithAsyncMethod_getUserToken() {
       ::grpc::Service::MarkMethodAsync(0);
     }
-    ~WithAsyncMethod_getAdminToken() override {
+    ~WithAsyncMethod_getUserToken() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getAdminToken(::grpc::ServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/) override {
+    ::grpc::Status getUserToken(::grpc::ServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestgetAdminToken(::grpc::ServerContext* context, ::user::auth::getAdminTokenReq* request, ::grpc::ServerAsyncResponseWriter< ::user::auth::getAdminTokenResp>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestgetUserToken(::grpc::ServerContext* context, ::user::auth::getUserTokenReq* request, ::grpc::ServerAsyncResponseWriter< ::user::auth::getUserTokenResp>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -157,41 +184,61 @@ class Auth final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/) override {
+    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestparseToken(::grpc::ServerContext* context, ::user::auth::parseTokenReq* request, ::grpc::ServerAsyncResponseWriter< ::user::auth::parseTokenResp>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestparseToken(::grpc::ServerContext* context, ::user::auth::parseTokenReq* request, ::grpc::ServerAsyncResponseWriter< ::user::auth::registerUserResp>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_getAdminToken<WithAsyncMethod_parseToken<Service > > AsyncService;
   template <class BaseClass>
-  class WithCallbackMethod_getAdminToken : public BaseClass {
+  class WithAsyncMethod_registerUer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_getAdminToken() {
-      ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::user::auth::getAdminTokenReq* request, ::user::auth::getAdminTokenResp* response) { return this->getAdminToken(context, request, response); }));}
-    void SetMessageAllocatorFor_getAdminToken(
-        ::grpc::MessageAllocator< ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp>*>(handler)
-              ->SetMessageAllocator(allocator);
+    WithAsyncMethod_registerUer() {
+      ::grpc::Service::MarkMethodAsync(2);
     }
-    ~WithCallbackMethod_getAdminToken() override {
+    ~WithAsyncMethod_registerUer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getAdminToken(::grpc::ServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/) override {
+    ::grpc::Status registerUer(::grpc::ServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* getAdminToken(
-      ::grpc::CallbackServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/)  { return nullptr; }
+    void RequestregisterUer(::grpc::ServerContext* context, ::user::auth::registerUserReq* request, ::grpc::ServerAsyncResponseWriter< ::user::auth::registerUserResp>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_getUserToken<WithAsyncMethod_parseToken<WithAsyncMethod_registerUer<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_getUserToken : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_getUserToken() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::user::auth::getUserTokenReq* request, ::user::auth::getUserTokenResp* response) { return this->getUserToken(context, request, response); }));}
+    void SetMessageAllocatorFor_getUserToken(
+        ::grpc::MessageAllocator< ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_getUserToken() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status getUserToken(::grpc::ServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* getUserToken(
+      ::grpc::CallbackServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_parseToken : public BaseClass {
@@ -200,41 +247,68 @@ class Auth final {
    public:
     WithCallbackMethod_parseToken() {
       ::grpc::Service::MarkMethodCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::user::auth::parseTokenReq, ::user::auth::parseTokenResp>(
+          new ::grpc::internal::CallbackUnaryHandler< ::user::auth::parseTokenReq, ::user::auth::registerUserResp>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::parseTokenResp* response) { return this->parseToken(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::user::auth::parseTokenReq* request, ::user::auth::registerUserResp* response) { return this->parseToken(context, request, response); }));}
     void SetMessageAllocatorFor_parseToken(
-        ::grpc::MessageAllocator< ::user::auth::parseTokenReq, ::user::auth::parseTokenResp>* allocator) {
+        ::grpc::MessageAllocator< ::user::auth::parseTokenReq, ::user::auth::registerUserResp>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::user::auth::parseTokenReq, ::user::auth::parseTokenResp>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::user::auth::parseTokenReq, ::user::auth::registerUserResp>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_parseToken() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/) override {
+    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* parseToken(
-      ::grpc::CallbackServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_getAdminToken<WithCallbackMethod_parseToken<Service > > CallbackService;
-  typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
-  class WithGenericMethod_getAdminToken : public BaseClass {
+  class WithCallbackMethod_registerUer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_getAdminToken() {
-      ::grpc::Service::MarkMethodGeneric(0);
+    WithCallbackMethod_registerUer() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::user::auth::registerUserReq, ::user::auth::registerUserResp>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::user::auth::registerUserReq* request, ::user::auth::registerUserResp* response) { return this->registerUer(context, request, response); }));}
+    void SetMessageAllocatorFor_registerUer(
+        ::grpc::MessageAllocator< ::user::auth::registerUserReq, ::user::auth::registerUserResp>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::user::auth::registerUserReq, ::user::auth::registerUserResp>*>(handler)
+              ->SetMessageAllocator(allocator);
     }
-    ~WithGenericMethod_getAdminToken() override {
+    ~WithCallbackMethod_registerUer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getAdminToken(::grpc::ServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/) override {
+    ::grpc::Status registerUer(::grpc::ServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* registerUer(
+      ::grpc::CallbackServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_getUserToken<WithCallbackMethod_parseToken<WithCallbackMethod_registerUer<Service > > > CallbackService;
+  typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_getUserToken : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_getUserToken() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_getUserToken() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status getUserToken(::grpc::ServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -251,28 +325,45 @@ class Auth final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/) override {
+    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithRawMethod_getAdminToken : public BaseClass {
+  class WithGenericMethod_registerUer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_getAdminToken() {
-      ::grpc::Service::MarkMethodRaw(0);
+    WithGenericMethod_registerUer() {
+      ::grpc::Service::MarkMethodGeneric(2);
     }
-    ~WithRawMethod_getAdminToken() override {
+    ~WithGenericMethod_registerUer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getAdminToken(::grpc::ServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/) override {
+    ::grpc::Status registerUer(::grpc::ServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestgetAdminToken(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+  };
+  template <class BaseClass>
+  class WithRawMethod_getUserToken : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_getUserToken() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_getUserToken() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status getUserToken(::grpc::ServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestgetUserToken(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -288,7 +379,7 @@ class Auth final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/) override {
+    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -297,25 +388,45 @@ class Auth final {
     }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_getAdminToken : public BaseClass {
+  class WithRawMethod_registerUer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_getAdminToken() {
-      ::grpc::Service::MarkMethodRawCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->getAdminToken(context, request, response); }));
+    WithRawMethod_registerUer() {
+      ::grpc::Service::MarkMethodRaw(2);
     }
-    ~WithRawCallbackMethod_getAdminToken() override {
+    ~WithRawMethod_registerUer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getAdminToken(::grpc::ServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/) override {
+    ::grpc::Status registerUer(::grpc::ServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* getAdminToken(
+    void RequestregisterUer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_getUserToken : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_getUserToken() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->getUserToken(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_getUserToken() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status getUserToken(::grpc::ServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* getUserToken(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -333,7 +444,7 @@ class Auth final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/) override {
+    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -341,31 +452,53 @@ class Auth final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_getAdminToken : public BaseClass {
+  class WithRawCallbackMethod_registerUer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_getAdminToken() {
+    WithRawCallbackMethod_registerUer() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->registerUer(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_registerUer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status registerUer(::grpc::ServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* registerUer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_getUserToken : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_getUserToken() {
       ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp>(
+          ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::user::auth::getAdminTokenReq, ::user::auth::getAdminTokenResp>* streamer) {
-                       return this->StreamedgetAdminToken(context,
+                     ::user::auth::getUserTokenReq, ::user::auth::getUserTokenResp>* streamer) {
+                       return this->StreamedgetUserToken(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_getAdminToken() override {
+    ~WithStreamedUnaryMethod_getUserToken() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status getAdminToken(::grpc::ServerContext* /*context*/, const ::user::auth::getAdminTokenReq* /*request*/, ::user::auth::getAdminTokenResp* /*response*/) override {
+    ::grpc::Status getUserToken(::grpc::ServerContext* /*context*/, const ::user::auth::getUserTokenReq* /*request*/, ::user::auth::getUserTokenResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedgetAdminToken(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::user::auth::getAdminTokenReq,::user::auth::getAdminTokenResp>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedgetUserToken(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::user::auth::getUserTokenReq,::user::auth::getUserTokenResp>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_parseToken : public BaseClass {
@@ -375,10 +508,10 @@ class Auth final {
     WithStreamedUnaryMethod_parseToken() {
       ::grpc::Service::MarkMethodStreamed(1,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::user::auth::parseTokenReq, ::user::auth::parseTokenResp>(
+          ::user::auth::parseTokenReq, ::user::auth::registerUserResp>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::user::auth::parseTokenReq, ::user::auth::parseTokenResp>* streamer) {
+                     ::user::auth::parseTokenReq, ::user::auth::registerUserResp>* streamer) {
                        return this->StreamedparseToken(context,
                          streamer);
                   }));
@@ -387,16 +520,43 @@ class Auth final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::parseTokenResp* /*response*/) override {
+    ::grpc::Status parseToken(::grpc::ServerContext* /*context*/, const ::user::auth::parseTokenReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedparseToken(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::user::auth::parseTokenReq,::user::auth::parseTokenResp>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedparseToken(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::user::auth::parseTokenReq,::user::auth::registerUserResp>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_getAdminToken<WithStreamedUnaryMethod_parseToken<Service > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_registerUer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_registerUer() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::user::auth::registerUserReq, ::user::auth::registerUserResp>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::user::auth::registerUserReq, ::user::auth::registerUserResp>* streamer) {
+                       return this->StreamedregisterUer(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_registerUer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status registerUer(::grpc::ServerContext* /*context*/, const ::user::auth::registerUserReq* /*request*/, ::user::auth::registerUserResp* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedregisterUer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::user::auth::registerUserReq,::user::auth::registerUserResp>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_getUserToken<WithStreamedUnaryMethod_parseToken<WithStreamedUnaryMethod_registerUer<Service > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_getAdminToken<WithStreamedUnaryMethod_parseToken<Service > > StreamedService;
+  typedef WithStreamedUnaryMethod_getUserToken<WithStreamedUnaryMethod_parseToken<WithStreamedUnaryMethod_registerUer<Service > > > StreamedService;
 };
 
 }  // namespace auth

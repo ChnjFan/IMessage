@@ -5,32 +5,37 @@
 #include "AuthServiceImpl.h"
 #include "UserServiceUtil.h"
 
-#define DEFAULT_ADMIN_TOKEN "admin_token_"
-#define DEFAULT_ADMIN_EXPIRE_TIME   36000
-
 AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<ConfigManager> &config)
     : config(config)
     , userDB(config->getDBConfig()){
 }
 
-grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerContext *context,
-                                const user::auth::getAdminTokenReq *request, user::auth::getAdminTokenResp *response) {
+UserDatabase& AuthServiceImpl::getUserDatabase() {
+    return userDB;
+}
+
+grpc::ServerUnaryReactor * AuthServiceImpl::getUserToken(grpc::CallbackServerContext *context,
+                                                         const user::auth::getUserTokenReq *request, user::auth::getUserTokenResp *response) {
     class Reactor : public grpc::ServerUnaryReactor {
     public:
-        Reactor(AuthServiceImpl& service, const user::auth::getAdminTokenReq *request,
-                user::auth::getAdminTokenResp *response, const std::shared_ptr<ConfigManager> &config) {
-            //检查 userID 是否为管理员
-            if (!isAdminUserID(config, request->userid())
-                || !isAdminSecret(config, request->secret())) {
-                Finish(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Request user is not admin"));
+        Reactor(AuthServiceImpl& service, const user::auth::getUserTokenReq *request,
+                user::auth::getUserTokenResp *response) {
+            const UserInfo* pUserInfo = service.getUserDatabase().find(request->userid());
+            if (nullptr == pUserInfo) {
+                USER_SERVICE_SERVER_LOG_INFO("Login error: Not find user " + request->userid());
+                Finish(grpc::Status(grpc::StatusCode::NOT_FOUND, "Login error: Not find user"));
+                return;
+            }
+
+            if (pUserInfo->getSecret() != request->secret()) {
+                USER_SERVICE_SERVER_LOG_INFO("Login error: Wrong secret");
+                Finish(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Login error: Wrong secret"));
                 return;
             }
 
             //TODO:设置 admin token 和过期时间
             // token 根据 userID 生成
 
-            response->set_token(DEFAULT_ADMIN_TOKEN + request->userid());
-            response->set_expiretimeseconds(DEFAULT_ADMIN_EXPIRE_TIME);
             Finish(grpc::Status::OK);
         }
 
@@ -52,7 +57,7 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getAdminToken(grpc::CallbackServerCo
             USER_SERVICE_SERVER_LOG_INFO("user::auth::getAdminToken Cancelled");
         }
     };
-    return new Reactor(*this, request, response, config);
+    return new Reactor(*this, request, response);
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::parseToken(grpc::CallbackServerContext *context,

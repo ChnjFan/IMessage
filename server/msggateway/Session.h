@@ -38,6 +38,7 @@ public:
     bool extend();
 
     void setState(SessionState s);
+    void setPlatform(int platform);
     void setSessionInfo(const USER_SERVICE_INFO *pInfo);
 
     SessionState getState() const;
@@ -52,6 +53,7 @@ private:
     void doRead();
     void doWrite();
 
+    const int SESSION_HELLO_TIMEOUT = 30;
     const int SESSION_DEFAULT_TIMEOUT = 300;
     tcp::socket socket_;
     SessionState state;

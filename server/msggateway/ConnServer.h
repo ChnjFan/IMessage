@@ -26,20 +26,17 @@ public:
     explicit ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, int port, int socketMaxConnNum = 100000,
             int socketMaxMsgLen = 4096, int socketTimeout = 10);
 
+    /**
+     * @brief 运行服务器
+     * @note  消息网关连接服务器，用于接收客户端连接
+     */
     void run();
 
-    void handleRequest(const SessionPtr& session, MessagePtr &message);
-
-    void deleteClient(const std::string &token);
+    void handleRequest(const SessionPtr& session, const MessagePtr &message);
 
 private:
-    void detectionTasks();
-    void handleUnauthSession();
-    void handleClients();
-
-    void handler();
-
-    static std::string revertTokenToJson(const std::string & token);
+    void startDetectionLoop();
+    void unauthSessionDetector();
 
     /**
      * @brief hello 报文处理
@@ -56,9 +53,9 @@ private:
      */
     void newSessionRequest(const SessionPtr & session, const MessagePtr & message);
 
-    void error(const SessionPtr &session, SERVER_RETURN_CODE code, std::string error);
-
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
+
+    std::mutex mutex;
 
     /* 长链接服务器配置 */
     std::shared_ptr<ConfigManager> configMgr;
@@ -72,7 +69,6 @@ private:
     /* 客户端管理 */
     int onlineSessionNum;
     tcp::acceptor acceptor;
-    boost::object_pool<Client> clientPool;
     std::unordered_map<std::string, ClientPtr> clients;
     std::list<SessionPtr> unauthorizedSessions;
     steady_timer taskTimer;

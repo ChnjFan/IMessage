@@ -53,18 +53,24 @@ extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_auth_2eproto;
 namespace user {
 namespace auth {
-class getAdminTokenReq;
-struct getAdminTokenReqDefaultTypeInternal;
-extern getAdminTokenReqDefaultTypeInternal _getAdminTokenReq_default_instance_;
-class getAdminTokenResp;
-struct getAdminTokenRespDefaultTypeInternal;
-extern getAdminTokenRespDefaultTypeInternal _getAdminTokenResp_default_instance_;
+class getUserTokenReq;
+struct getUserTokenReqDefaultTypeInternal;
+extern getUserTokenReqDefaultTypeInternal _getUserTokenReq_default_instance_;
+class getUserTokenResp;
+struct getUserTokenRespDefaultTypeInternal;
+extern getUserTokenRespDefaultTypeInternal _getUserTokenResp_default_instance_;
 class parseTokenReq;
 struct parseTokenReqDefaultTypeInternal;
 extern parseTokenReqDefaultTypeInternal _parseTokenReq_default_instance_;
 class parseTokenResp;
 struct parseTokenRespDefaultTypeInternal;
 extern parseTokenRespDefaultTypeInternal _parseTokenResp_default_instance_;
+class registerUserReq;
+struct registerUserReqDefaultTypeInternal;
+extern registerUserReqDefaultTypeInternal _registerUserReq_default_instance_;
+class registerUserResp;
+struct registerUserRespDefaultTypeInternal;
+extern registerUserRespDefaultTypeInternal _registerUserResp_default_instance_;
 }  // namespace auth
 }  // namespace user
 namespace google {
@@ -78,6 +84,424 @@ namespace auth {
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class registerUserResp final
+    : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:user.auth.registerUserResp) */ {
+ public:
+  inline registerUserResp() : registerUserResp(nullptr) {}
+  ~registerUserResp() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(registerUserResp* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(registerUserResp));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR registerUserResp(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline registerUserResp(const registerUserResp& from) : registerUserResp(nullptr, from) {}
+  inline registerUserResp(registerUserResp&& from) noexcept
+      : registerUserResp(nullptr, std::move(from)) {}
+  inline registerUserResp& operator=(const registerUserResp& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline registerUserResp& operator=(registerUserResp&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const registerUserResp& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const registerUserResp* internal_default_instance() {
+    return reinterpret_cast<const registerUserResp*>(
+        &_registerUserResp_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 5;
+  friend void swap(registerUserResp& a, registerUserResp& b) { a.Swap(&b); }
+  inline void Swap(registerUserResp* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(registerUserResp* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  registerUserResp* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<registerUserResp>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const registerUserResp& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const registerUserResp& from) { registerUserResp::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(registerUserResp* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "user.auth.registerUserResp"; }
+
+ protected:
+  explicit registerUserResp(::google::protobuf::Arena* arena);
+  registerUserResp(::google::protobuf::Arena* arena, const registerUserResp& from);
+  registerUserResp(::google::protobuf::Arena* arena, registerUserResp&& from) noexcept
+      : registerUserResp(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kResultFieldNumber = 1,
+  };
+  // bool result = 1;
+  void clear_result() ;
+  bool result() const;
+  void set_result(bool value);
+
+  private:
+  bool _internal_result() const;
+  void _internal_set_result(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:user.auth.registerUserResp)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const registerUserResp& from_msg);
+    bool result_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_auth_2eproto;
+};
+// -------------------------------------------------------------------
+
+class registerUserReq final
+    : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:user.auth.registerUserReq) */ {
+ public:
+  inline registerUserReq() : registerUserReq(nullptr) {}
+  ~registerUserReq() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(registerUserReq* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(registerUserReq));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR registerUserReq(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline registerUserReq(const registerUserReq& from) : registerUserReq(nullptr, from) {}
+  inline registerUserReq(registerUserReq&& from) noexcept
+      : registerUserReq(nullptr, std::move(from)) {}
+  inline registerUserReq& operator=(const registerUserReq& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline registerUserReq& operator=(registerUserReq&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const registerUserReq& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const registerUserReq* internal_default_instance() {
+    return reinterpret_cast<const registerUserReq*>(
+        &_registerUserReq_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 4;
+  friend void swap(registerUserReq& a, registerUserReq& b) { a.Swap(&b); }
+  inline void Swap(registerUserReq* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(registerUserReq* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  registerUserReq* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<registerUserReq>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const registerUserReq& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const registerUserReq& from) { registerUserReq::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(registerUserReq* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "user.auth.registerUserReq"; }
+
+ protected:
+  explicit registerUserReq(::google::protobuf::Arena* arena);
+  registerUserReq(::google::protobuf::Arena* arena, const registerUserReq& from);
+  registerUserReq(::google::protobuf::Arena* arena, registerUserReq&& from) noexcept
+      : registerUserReq(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kNickNameFieldNumber = 2,
+    kFaceURLFieldNumber = 3,
+    kUserIDFieldNumber = 1,
+  };
+  // string nickName = 2;
+  void clear_nickname() ;
+  const std::string& nickname() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_nickname(Arg_&& arg, Args_... args);
+  std::string* mutable_nickname();
+  PROTOBUF_NODISCARD std::string* release_nickname();
+  void set_allocated_nickname(std::string* value);
+
+  private:
+  const std::string& _internal_nickname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_nickname(
+      const std::string& value);
+  std::string* _internal_mutable_nickname();
+
+  public:
+  // string faceURL = 3;
+  void clear_faceurl() ;
+  const std::string& faceurl() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_faceurl(Arg_&& arg, Args_... args);
+  std::string* mutable_faceurl();
+  PROTOBUF_NODISCARD std::string* release_faceurl();
+  void set_allocated_faceurl(std::string* value);
+
+  private:
+  const std::string& _internal_faceurl() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_faceurl(
+      const std::string& value);
+  std::string* _internal_mutable_faceurl();
+
+  public:
+  // int32 userID = 1;
+  void clear_userid() ;
+  ::int32_t userid() const;
+  void set_userid(::int32_t value);
+
+  private:
+  ::int32_t _internal_userid() const;
+  void _internal_set_userid(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:user.auth.registerUserReq)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      2, 3, 0,
+      49, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const registerUserReq& from_msg);
+    ::google::protobuf::internal::ArenaStringPtr nickname_;
+    ::google::protobuf::internal::ArenaStringPtr faceurl_;
+    ::int32_t userid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_auth_2eproto;
+};
 // -------------------------------------------------------------------
 
 class parseTokenResp final
@@ -228,33 +652,17 @@ class parseTokenResp final
   // accessors -------------------------------------------------------
   enum : int {
     kUserIDFieldNumber = 1,
-    kExpireTimeSecondsFieldNumber = 3,
     kPlatformIDFieldNumber = 2,
+    kExpireTimeSecondsFieldNumber = 3,
   };
-  // string userID = 1;
+  // int32 userID = 1;
   void clear_userid() ;
-  const std::string& userid() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_userid(Arg_&& arg, Args_... args);
-  std::string* mutable_userid();
-  PROTOBUF_NODISCARD std::string* release_userid();
-  void set_allocated_userid(std::string* value);
+  ::int32_t userid() const;
+  void set_userid(::int32_t value);
 
   private:
-  const std::string& _internal_userid() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_userid(
-      const std::string& value);
-  std::string* _internal_mutable_userid();
-
-  public:
-  // int64 expireTimeSeconds = 3;
-  void clear_expiretimeseconds() ;
-  ::int64_t expiretimeseconds() const;
-  void set_expiretimeseconds(::int64_t value);
-
-  private:
-  ::int64_t _internal_expiretimeseconds() const;
-  void _internal_set_expiretimeseconds(::int64_t value);
+  ::int32_t _internal_userid() const;
+  void _internal_set_userid(::int32_t value);
 
   public:
   // int32 platformID = 2;
@@ -267,13 +675,23 @@ class parseTokenResp final
   void _internal_set_platformid(::int32_t value);
 
   public:
+  // int64 expireTimeSeconds = 3;
+  void clear_expiretimeseconds() ;
+  ::int64_t expiretimeseconds() const;
+  void set_expiretimeseconds(::int64_t value);
+
+  private:
+  ::int64_t _internal_expiretimeseconds() const;
+  void _internal_set_expiretimeseconds(::int64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:user.auth.parseTokenResp)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       2, 3, 0,
-      39, 2>
+      0, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -290,9 +708,9 @@ class parseTokenResp final
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const parseTokenResp& from_msg);
-    ::google::protobuf::internal::ArenaStringPtr userid_;
-    ::int64_t expiretimeseconds_;
+    ::int32_t userid_;
     ::int32_t platformid_;
+    ::int64_t expiretimeseconds_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -498,32 +916,32 @@ class parseTokenReq final
 };
 // -------------------------------------------------------------------
 
-class getAdminTokenResp final
+class getUserTokenResp final
     : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:user.auth.getAdminTokenResp) */ {
+/* @@protoc_insertion_point(class_definition:user.auth.getUserTokenResp) */ {
  public:
-  inline getAdminTokenResp() : getAdminTokenResp(nullptr) {}
-  ~getAdminTokenResp() PROTOBUF_FINAL;
+  inline getUserTokenResp() : getUserTokenResp(nullptr) {}
+  ~getUserTokenResp() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(getAdminTokenResp* msg, std::destroying_delete_t) {
+  void operator delete(getUserTokenResp* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(getAdminTokenResp));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(getUserTokenResp));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR getAdminTokenResp(
+  explicit PROTOBUF_CONSTEXPR getUserTokenResp(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline getAdminTokenResp(const getAdminTokenResp& from) : getAdminTokenResp(nullptr, from) {}
-  inline getAdminTokenResp(getAdminTokenResp&& from) noexcept
-      : getAdminTokenResp(nullptr, std::move(from)) {}
-  inline getAdminTokenResp& operator=(const getAdminTokenResp& from) {
+  inline getUserTokenResp(const getUserTokenResp& from) : getUserTokenResp(nullptr, from) {}
+  inline getUserTokenResp(getUserTokenResp&& from) noexcept
+      : getUserTokenResp(nullptr, std::move(from)) {}
+  inline getUserTokenResp& operator=(const getUserTokenResp& from) {
     CopyFrom(from);
     return *this;
   }
-  inline getAdminTokenResp& operator=(getAdminTokenResp&& from) noexcept {
+  inline getUserTokenResp& operator=(getUserTokenResp&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -551,16 +969,16 @@ class getAdminTokenResp final
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const getAdminTokenResp& default_instance() {
+  static const getUserTokenResp& default_instance() {
     return *internal_default_instance();
   }
-  static inline const getAdminTokenResp* internal_default_instance() {
-    return reinterpret_cast<const getAdminTokenResp*>(
-        &_getAdminTokenResp_default_instance_);
+  static inline const getUserTokenResp* internal_default_instance() {
+    return reinterpret_cast<const getUserTokenResp*>(
+        &_getUserTokenResp_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 1;
-  friend void swap(getAdminTokenResp& a, getAdminTokenResp& b) { a.Swap(&b); }
-  inline void Swap(getAdminTokenResp* other) {
+  friend void swap(getUserTokenResp& a, getUserTokenResp& b) { a.Swap(&b); }
+  inline void Swap(getUserTokenResp* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -568,7 +986,7 @@ class getAdminTokenResp final
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(getAdminTokenResp* other) {
+  void UnsafeArenaSwap(getUserTokenResp* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -576,13 +994,13 @@ class getAdminTokenResp final
 
   // implements Message ----------------------------------------------
 
-  getAdminTokenResp* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<getAdminTokenResp>(arena);
+  getUserTokenResp* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<getUserTokenResp>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const getAdminTokenResp& from);
+  void CopyFrom(const getUserTokenResp& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const getAdminTokenResp& from) { getAdminTokenResp::MergeImpl(*this, from); }
+  void MergeFrom(const getUserTokenResp& from) { getUserTokenResp::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -619,18 +1037,18 @@ class getAdminTokenResp final
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(getAdminTokenResp* other);
+  void InternalSwap(getUserTokenResp* other);
  private:
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "user.auth.getAdminTokenResp"; }
+  static ::absl::string_view FullMessageName() { return "user.auth.getUserTokenResp"; }
 
  protected:
-  explicit getAdminTokenResp(::google::protobuf::Arena* arena);
-  getAdminTokenResp(::google::protobuf::Arena* arena, const getAdminTokenResp& from);
-  getAdminTokenResp(::google::protobuf::Arena* arena, getAdminTokenResp&& from) noexcept
-      : getAdminTokenResp(arena) {
+  explicit getUserTokenResp(::google::protobuf::Arena* arena);
+  getUserTokenResp(::google::protobuf::Arena* arena, const getUserTokenResp& from);
+  getUserTokenResp(::google::protobuf::Arena* arena, getUserTokenResp&& from) noexcept
+      : getUserTokenResp(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -674,13 +1092,13 @@ class getAdminTokenResp final
   void _internal_set_expiretimeseconds(::int64_t value);
 
   public:
-  // @@protoc_insertion_point(class_scope:user.auth.getAdminTokenResp)
+  // @@protoc_insertion_point(class_scope:user.auth.getUserTokenResp)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       1, 2, 0,
-      41, 2>
+      40, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -696,7 +1114,7 @@ class getAdminTokenResp final
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const getAdminTokenResp& from_msg);
+                          const getUserTokenResp& from_msg);
     ::google::protobuf::internal::ArenaStringPtr token_;
     ::int64_t expiretimeseconds_;
     ::google::protobuf::internal::CachedSize _cached_size_;
@@ -707,32 +1125,32 @@ class getAdminTokenResp final
 };
 // -------------------------------------------------------------------
 
-class getAdminTokenReq final
+class getUserTokenReq final
     : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:user.auth.getAdminTokenReq) */ {
+/* @@protoc_insertion_point(class_definition:user.auth.getUserTokenReq) */ {
  public:
-  inline getAdminTokenReq() : getAdminTokenReq(nullptr) {}
-  ~getAdminTokenReq() PROTOBUF_FINAL;
+  inline getUserTokenReq() : getUserTokenReq(nullptr) {}
+  ~getUserTokenReq() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(getAdminTokenReq* msg, std::destroying_delete_t) {
+  void operator delete(getUserTokenReq* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(getAdminTokenReq));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(getUserTokenReq));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR getAdminTokenReq(
+  explicit PROTOBUF_CONSTEXPR getUserTokenReq(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline getAdminTokenReq(const getAdminTokenReq& from) : getAdminTokenReq(nullptr, from) {}
-  inline getAdminTokenReq(getAdminTokenReq&& from) noexcept
-      : getAdminTokenReq(nullptr, std::move(from)) {}
-  inline getAdminTokenReq& operator=(const getAdminTokenReq& from) {
+  inline getUserTokenReq(const getUserTokenReq& from) : getUserTokenReq(nullptr, from) {}
+  inline getUserTokenReq(getUserTokenReq&& from) noexcept
+      : getUserTokenReq(nullptr, std::move(from)) {}
+  inline getUserTokenReq& operator=(const getUserTokenReq& from) {
     CopyFrom(from);
     return *this;
   }
-  inline getAdminTokenReq& operator=(getAdminTokenReq&& from) noexcept {
+  inline getUserTokenReq& operator=(getUserTokenReq&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -760,16 +1178,16 @@ class getAdminTokenReq final
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const getAdminTokenReq& default_instance() {
+  static const getUserTokenReq& default_instance() {
     return *internal_default_instance();
   }
-  static inline const getAdminTokenReq* internal_default_instance() {
-    return reinterpret_cast<const getAdminTokenReq*>(
-        &_getAdminTokenReq_default_instance_);
+  static inline const getUserTokenReq* internal_default_instance() {
+    return reinterpret_cast<const getUserTokenReq*>(
+        &_getUserTokenReq_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 0;
-  friend void swap(getAdminTokenReq& a, getAdminTokenReq& b) { a.Swap(&b); }
-  inline void Swap(getAdminTokenReq* other) {
+  friend void swap(getUserTokenReq& a, getUserTokenReq& b) { a.Swap(&b); }
+  inline void Swap(getUserTokenReq* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -777,7 +1195,7 @@ class getAdminTokenReq final
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(getAdminTokenReq* other) {
+  void UnsafeArenaSwap(getUserTokenReq* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -785,13 +1203,13 @@ class getAdminTokenReq final
 
   // implements Message ----------------------------------------------
 
-  getAdminTokenReq* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<getAdminTokenReq>(arena);
+  getUserTokenReq* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<getUserTokenReq>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const getAdminTokenReq& from);
+  void CopyFrom(const getUserTokenReq& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const getAdminTokenReq& from) { getAdminTokenReq::MergeImpl(*this, from); }
+  void MergeFrom(const getUserTokenReq& from) { getUserTokenReq::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -828,18 +1246,18 @@ class getAdminTokenReq final
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(getAdminTokenReq* other);
+  void InternalSwap(getUserTokenReq* other);
  private:
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "user.auth.getAdminTokenReq"; }
+  static ::absl::string_view FullMessageName() { return "user.auth.getUserTokenReq"; }
 
  protected:
-  explicit getAdminTokenReq(::google::protobuf::Arena* arena);
-  getAdminTokenReq(::google::protobuf::Arena* arena, const getAdminTokenReq& from);
-  getAdminTokenReq(::google::protobuf::Arena* arena, getAdminTokenReq&& from) noexcept
-      : getAdminTokenReq(arena) {
+  explicit getUserTokenReq(::google::protobuf::Arena* arena);
+  getUserTokenReq(::google::protobuf::Arena* arena, const getUserTokenReq& from);
+  getUserTokenReq(::google::protobuf::Arena* arena, getUserTokenReq&& from) noexcept
+      : getUserTokenReq(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -854,25 +1272,9 @@ class getAdminTokenReq final
 
   // accessors -------------------------------------------------------
   enum : int {
-    kUserIDFieldNumber = 1,
     kSecretFieldNumber = 2,
+    kUserIDFieldNumber = 1,
   };
-  // string userID = 1;
-  void clear_userid() ;
-  const std::string& userid() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_userid(Arg_&& arg, Args_... args);
-  std::string* mutable_userid();
-  PROTOBUF_NODISCARD std::string* release_userid();
-  void set_allocated_userid(std::string* value);
-
-  private:
-  const std::string& _internal_userid() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_userid(
-      const std::string& value);
-  std::string* _internal_mutable_userid();
-
-  public:
   // string secret = 2;
   void clear_secret() ;
   const std::string& secret() const;
@@ -889,13 +1291,23 @@ class getAdminTokenReq final
   std::string* _internal_mutable_secret();
 
   public:
-  // @@protoc_insertion_point(class_scope:user.auth.getAdminTokenReq)
+  // int32 userID = 1;
+  void clear_userid() ;
+  ::int32_t userid() const;
+  void set_userid(::int32_t value);
+
+  private:
+  ::int32_t _internal_userid() const;
+  void _internal_set_userid(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:user.auth.getUserTokenReq)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       1, 2, 0,
-      47, 2>
+      40, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -911,9 +1323,9 @@ class getAdminTokenReq final
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const getAdminTokenReq& from_msg);
-    ::google::protobuf::internal::ArenaStringPtr userid_;
+                          const getUserTokenReq& from_msg);
     ::google::protobuf::internal::ArenaStringPtr secret_;
+    ::int32_t userid_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -935,174 +1347,148 @@ class getAdminTokenReq final
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
-// getAdminTokenReq
+// getUserTokenReq
 
-// string userID = 1;
-inline void getAdminTokenReq::clear_userid() {
+// int32 userID = 1;
+inline void getUserTokenReq::clear_userid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.ClearToEmpty();
+  _impl_.userid_ = 0;
 }
-inline const std::string& getAdminTokenReq::userid() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:user.auth.getAdminTokenReq.userID)
+inline ::int32_t getUserTokenReq::userid() const {
+  // @@protoc_insertion_point(field_get:user.auth.getUserTokenReq.userID)
   return _internal_userid();
 }
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void getAdminTokenReq::set_userid(Arg_&& arg,
-                                                     Args_... args) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:user.auth.getAdminTokenReq.userID)
+inline void getUserTokenReq::set_userid(::int32_t value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:user.auth.getUserTokenReq.userID)
 }
-inline std::string* getAdminTokenReq::mutable_userid() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_userid();
-  // @@protoc_insertion_point(field_mutable:user.auth.getAdminTokenReq.userID)
-  return _s;
-}
-inline const std::string& getAdminTokenReq::_internal_userid() const {
+inline ::int32_t getUserTokenReq::_internal_userid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.userid_.Get();
+  return _impl_.userid_;
 }
-inline void getAdminTokenReq::_internal_set_userid(const std::string& value) {
+inline void getUserTokenReq::_internal_set_userid(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.Set(value, GetArena());
-}
-inline std::string* getAdminTokenReq::_internal_mutable_userid() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.userid_.Mutable( GetArena());
-}
-inline std::string* getAdminTokenReq::release_userid() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:user.auth.getAdminTokenReq.userID)
-  return _impl_.userid_.Release();
-}
-inline void getAdminTokenReq::set_allocated_userid(std::string* value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.userid_.IsDefault()) {
-    _impl_.userid_.Set("", GetArena());
-  }
-  // @@protoc_insertion_point(field_set_allocated:user.auth.getAdminTokenReq.userID)
+  _impl_.userid_ = value;
 }
 
 // string secret = 2;
-inline void getAdminTokenReq::clear_secret() {
+inline void getUserTokenReq::clear_secret() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.secret_.ClearToEmpty();
 }
-inline const std::string& getAdminTokenReq::secret() const
+inline const std::string& getUserTokenReq::secret() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:user.auth.getAdminTokenReq.secret)
+  // @@protoc_insertion_point(field_get:user.auth.getUserTokenReq.secret)
   return _internal_secret();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void getAdminTokenReq::set_secret(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void getUserTokenReq::set_secret(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.secret_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:user.auth.getAdminTokenReq.secret)
+  // @@protoc_insertion_point(field_set:user.auth.getUserTokenReq.secret)
 }
-inline std::string* getAdminTokenReq::mutable_secret() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline std::string* getUserTokenReq::mutable_secret() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   std::string* _s = _internal_mutable_secret();
-  // @@protoc_insertion_point(field_mutable:user.auth.getAdminTokenReq.secret)
+  // @@protoc_insertion_point(field_mutable:user.auth.getUserTokenReq.secret)
   return _s;
 }
-inline const std::string& getAdminTokenReq::_internal_secret() const {
+inline const std::string& getUserTokenReq::_internal_secret() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.secret_.Get();
 }
-inline void getAdminTokenReq::_internal_set_secret(const std::string& value) {
+inline void getUserTokenReq::_internal_set_secret(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.secret_.Set(value, GetArena());
 }
-inline std::string* getAdminTokenReq::_internal_mutable_secret() {
+inline std::string* getUserTokenReq::_internal_mutable_secret() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.secret_.Mutable( GetArena());
 }
-inline std::string* getAdminTokenReq::release_secret() {
+inline std::string* getUserTokenReq::release_secret() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:user.auth.getAdminTokenReq.secret)
+  // @@protoc_insertion_point(field_release:user.auth.getUserTokenReq.secret)
   return _impl_.secret_.Release();
 }
-inline void getAdminTokenReq::set_allocated_secret(std::string* value) {
+inline void getUserTokenReq::set_allocated_secret(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.secret_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.secret_.IsDefault()) {
     _impl_.secret_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:user.auth.getAdminTokenReq.secret)
+  // @@protoc_insertion_point(field_set_allocated:user.auth.getUserTokenReq.secret)
 }
 
 // -------------------------------------------------------------------
 
-// getAdminTokenResp
+// getUserTokenResp
 
 // string token = 1;
-inline void getAdminTokenResp::clear_token() {
+inline void getUserTokenResp::clear_token() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.token_.ClearToEmpty();
 }
-inline const std::string& getAdminTokenResp::token() const
+inline const std::string& getUserTokenResp::token() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:user.auth.getAdminTokenResp.token)
+  // @@protoc_insertion_point(field_get:user.auth.getUserTokenResp.token)
   return _internal_token();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void getAdminTokenResp::set_token(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void getUserTokenResp::set_token(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:user.auth.getAdminTokenResp.token)
+  // @@protoc_insertion_point(field_set:user.auth.getUserTokenResp.token)
 }
-inline std::string* getAdminTokenResp::mutable_token() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline std::string* getUserTokenResp::mutable_token() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   std::string* _s = _internal_mutable_token();
-  // @@protoc_insertion_point(field_mutable:user.auth.getAdminTokenResp.token)
+  // @@protoc_insertion_point(field_mutable:user.auth.getUserTokenResp.token)
   return _s;
 }
-inline const std::string& getAdminTokenResp::_internal_token() const {
+inline const std::string& getUserTokenResp::_internal_token() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.token_.Get();
 }
-inline void getAdminTokenResp::_internal_set_token(const std::string& value) {
+inline void getUserTokenResp::_internal_set_token(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.token_.Set(value, GetArena());
 }
-inline std::string* getAdminTokenResp::_internal_mutable_token() {
+inline std::string* getUserTokenResp::_internal_mutable_token() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.token_.Mutable( GetArena());
 }
-inline std::string* getAdminTokenResp::release_token() {
+inline std::string* getUserTokenResp::release_token() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:user.auth.getAdminTokenResp.token)
+  // @@protoc_insertion_point(field_release:user.auth.getUserTokenResp.token)
   return _impl_.token_.Release();
 }
-inline void getAdminTokenResp::set_allocated_token(std::string* value) {
+inline void getUserTokenResp::set_allocated_token(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.token_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.token_.IsDefault()) {
     _impl_.token_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:user.auth.getAdminTokenResp.token)
+  // @@protoc_insertion_point(field_set_allocated:user.auth.getUserTokenResp.token)
 }
 
 // int64 expireTimeSeconds = 2;
-inline void getAdminTokenResp::clear_expiretimeseconds() {
+inline void getUserTokenResp::clear_expiretimeseconds() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expiretimeseconds_ = ::int64_t{0};
 }
-inline ::int64_t getAdminTokenResp::expiretimeseconds() const {
-  // @@protoc_insertion_point(field_get:user.auth.getAdminTokenResp.expireTimeSeconds)
+inline ::int64_t getUserTokenResp::expiretimeseconds() const {
+  // @@protoc_insertion_point(field_get:user.auth.getUserTokenResp.expireTimeSeconds)
   return _internal_expiretimeseconds();
 }
-inline void getAdminTokenResp::set_expiretimeseconds(::int64_t value) {
+inline void getUserTokenResp::set_expiretimeseconds(::int64_t value) {
   _internal_set_expiretimeseconds(value);
-  // @@protoc_insertion_point(field_set:user.auth.getAdminTokenResp.expireTimeSeconds)
+  // @@protoc_insertion_point(field_set:user.auth.getUserTokenResp.expireTimeSeconds)
 }
-inline ::int64_t getAdminTokenResp::_internal_expiretimeseconds() const {
+inline ::int64_t getUserTokenResp::_internal_expiretimeseconds() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.expiretimeseconds_;
 }
-inline void getAdminTokenResp::_internal_set_expiretimeseconds(::int64_t value) {
+inline void getUserTokenResp::_internal_set_expiretimeseconds(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expiretimeseconds_ = value;
 }
@@ -1163,52 +1549,26 @@ inline void parseTokenReq::set_allocated_token(std::string* value) {
 
 // parseTokenResp
 
-// string userID = 1;
+// int32 userID = 1;
 inline void parseTokenResp::clear_userid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.ClearToEmpty();
+  _impl_.userid_ = 0;
 }
-inline const std::string& parseTokenResp::userid() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::int32_t parseTokenResp::userid() const {
   // @@protoc_insertion_point(field_get:user.auth.parseTokenResp.userID)
   return _internal_userid();
 }
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void parseTokenResp::set_userid(Arg_&& arg,
-                                                     Args_... args) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+inline void parseTokenResp::set_userid(::int32_t value) {
+  _internal_set_userid(value);
   // @@protoc_insertion_point(field_set:user.auth.parseTokenResp.userID)
 }
-inline std::string* parseTokenResp::mutable_userid() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_userid();
-  // @@protoc_insertion_point(field_mutable:user.auth.parseTokenResp.userID)
-  return _s;
-}
-inline const std::string& parseTokenResp::_internal_userid() const {
+inline ::int32_t parseTokenResp::_internal_userid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.userid_.Get();
+  return _impl_.userid_;
 }
-inline void parseTokenResp::_internal_set_userid(const std::string& value) {
+inline void parseTokenResp::_internal_set_userid(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.Set(value, GetArena());
-}
-inline std::string* parseTokenResp::_internal_mutable_userid() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.userid_.Mutable( GetArena());
-}
-inline std::string* parseTokenResp::release_userid() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:user.auth.parseTokenResp.userID)
-  return _impl_.userid_.Release();
-}
-inline void parseTokenResp::set_allocated_userid(std::string* value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.userid_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.userid_.IsDefault()) {
-    _impl_.userid_.Set("", GetArena());
-  }
-  // @@protoc_insertion_point(field_set_allocated:user.auth.parseTokenResp.userID)
+  _impl_.userid_ = value;
 }
 
 // int32 platformID = 2;
@@ -1253,6 +1613,154 @@ inline ::int64_t parseTokenResp::_internal_expiretimeseconds() const {
 inline void parseTokenResp::_internal_set_expiretimeseconds(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expiretimeseconds_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// registerUserReq
+
+// int32 userID = 1;
+inline void registerUserReq::clear_userid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.userid_ = 0;
+}
+inline ::int32_t registerUserReq::userid() const {
+  // @@protoc_insertion_point(field_get:user.auth.registerUserReq.userID)
+  return _internal_userid();
+}
+inline void registerUserReq::set_userid(::int32_t value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:user.auth.registerUserReq.userID)
+}
+inline ::int32_t registerUserReq::_internal_userid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.userid_;
+}
+inline void registerUserReq::_internal_set_userid(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.userid_ = value;
+}
+
+// string nickName = 2;
+inline void registerUserReq::clear_nickname() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.nickname_.ClearToEmpty();
+}
+inline const std::string& registerUserReq::nickname() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:user.auth.registerUserReq.nickName)
+  return _internal_nickname();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void registerUserReq::set_nickname(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.nickname_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:user.auth.registerUserReq.nickName)
+}
+inline std::string* registerUserReq::mutable_nickname() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_nickname();
+  // @@protoc_insertion_point(field_mutable:user.auth.registerUserReq.nickName)
+  return _s;
+}
+inline const std::string& registerUserReq::_internal_nickname() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.nickname_.Get();
+}
+inline void registerUserReq::_internal_set_nickname(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.nickname_.Set(value, GetArena());
+}
+inline std::string* registerUserReq::_internal_mutable_nickname() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.nickname_.Mutable( GetArena());
+}
+inline std::string* registerUserReq::release_nickname() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:user.auth.registerUserReq.nickName)
+  return _impl_.nickname_.Release();
+}
+inline void registerUserReq::set_allocated_nickname(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.nickname_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.nickname_.IsDefault()) {
+    _impl_.nickname_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:user.auth.registerUserReq.nickName)
+}
+
+// string faceURL = 3;
+inline void registerUserReq::clear_faceurl() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.faceurl_.ClearToEmpty();
+}
+inline const std::string& registerUserReq::faceurl() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:user.auth.registerUserReq.faceURL)
+  return _internal_faceurl();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void registerUserReq::set_faceurl(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.faceurl_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:user.auth.registerUserReq.faceURL)
+}
+inline std::string* registerUserReq::mutable_faceurl() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_faceurl();
+  // @@protoc_insertion_point(field_mutable:user.auth.registerUserReq.faceURL)
+  return _s;
+}
+inline const std::string& registerUserReq::_internal_faceurl() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.faceurl_.Get();
+}
+inline void registerUserReq::_internal_set_faceurl(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.faceurl_.Set(value, GetArena());
+}
+inline std::string* registerUserReq::_internal_mutable_faceurl() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.faceurl_.Mutable( GetArena());
+}
+inline std::string* registerUserReq::release_faceurl() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:user.auth.registerUserReq.faceURL)
+  return _impl_.faceurl_.Release();
+}
+inline void registerUserReq::set_allocated_faceurl(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.faceurl_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.faceurl_.IsDefault()) {
+    _impl_.faceurl_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:user.auth.registerUserReq.faceURL)
+}
+
+// -------------------------------------------------------------------
+
+// registerUserResp
+
+// bool result = 1;
+inline void registerUserResp::clear_result() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.result_ = false;
+}
+inline bool registerUserResp::result() const {
+  // @@protoc_insertion_point(field_get:user.auth.registerUserResp.result)
+  return _internal_result();
+}
+inline void registerUserResp::set_result(bool value) {
+  _internal_set_result(value);
+  // @@protoc_insertion_point(field_set:user.auth.registerUserResp.result)
+}
+inline bool registerUserResp::_internal_result() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.result_;
+}
+inline void registerUserResp::_internal_set_result(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.result_ = value;
 }
 
 #ifdef __GNUC__
