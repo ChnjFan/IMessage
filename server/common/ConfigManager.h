@@ -60,6 +60,7 @@ typedef struct {
     RPC_SERVICE_CONFIG serviceConfig;
     std::string adminUserID;
     std::string adminSecret;
+    std::string tokenSecret;
 } SERVICE_USER_CONFIG;
 
 // 数据库配置

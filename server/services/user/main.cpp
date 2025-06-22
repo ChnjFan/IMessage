@@ -35,6 +35,10 @@ std::shared_ptr<ConfigManager> loadConfig() {
                 YAML::Node rpcNode = (*configNode)["rpc"];
                 loadRpcServiceConfig(&mgr->getUserServiceConfig()->serviceConfig, rpcNode);
             }
+            if (ConfigManager::hasConfigField(configNode, "token")) {
+                YAML::Node rpcNode = (*configNode)["token"];
+                mgr->getUserServiceConfig()->tokenSecret = rpcNode["secret"].as<std::string>();
+            }
         });
     config->parseConfig(CONFIG_TYPE::CONFIG_TYPE_DB,
         [](const ConfigManager *mgr, const std::shared_ptr<YAML::Node> &configNode) {

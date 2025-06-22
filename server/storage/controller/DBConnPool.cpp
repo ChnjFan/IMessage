@@ -4,7 +4,6 @@
 
 #include "DBConnPool.h"
 #include "Exception.h"
-#include "boost/json/detail/literals.hpp"
 
 void DBConnPool::init(const std::string& database, const std::string &address, const std::string &username,
                         const std::string &password, const int t_capacity) {

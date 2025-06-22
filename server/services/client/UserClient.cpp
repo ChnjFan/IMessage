@@ -9,8 +9,7 @@
 UserClient::UserClient(const std::shared_ptr<grpc::Channel> &channel)
         : stub(user::auth::Auth::NewStub(channel)) { }
 
-bool UserClient::getAdminToken(const std::string &userid, const std::string &secret, std::string *token,
-        int64_t *expireTime) {
+bool UserClient::getUserToken(const UserInfo *pUserInfo, std::string *token, int64_t *expireTime) const {
     grpc::ClientContext context;
     user::auth::getUserTokenReq request;
     request.set_userid(userid);
@@ -41,23 +40,24 @@ bool UserClient::getAdminToken(const std::string &userid, const std::string &sec
     return result;
 }
 
-USER_SERVICE_INFO* UserClient::parseLoginRequest(const char *request) {
-    auto *response = new USER_SERVICE_INFO();
+UserInfo* UserClient::parseLoginRequest(const char *request) {
     boost::json::value json = boost::json::parse(request);
-    response->userID = json.at("userID").as_string();
-    response->secret = json.at("secret").as_string();
+    const int32_t userid = static_cast<int32_t>(json.at("userid").as_int64());
+    auto *response = new UserInfo(userid);
+    std::string secret;
+    secret = json.at("userID").as_string();
+    response->setSecret(secret);
     return response;
 }
 
-USER_SERVICE_INFO * UserClient::parseRegisterRequest(const char *request) {
-    auto *response = new USER_SERVICE_INFO();
+UserInfo * UserClient::parseRegisterRequest(const char *request) {
     boost::json::value json = boost::json::parse(request);
-    response->userID = json.at("userID").as_string();
-    response->nickName = json.at("nickName").as_string();
-    response->faceURL = json.at("faceURL").as_string();
+    const int32_t userid = static_cast<int32_t>(json.at("userid").as_int64());
+    auto *response = new UserInfo(userid);
+    std::string value;
+    value = json.at("nickName").as_string();
+    response->setNickName(value);
+    value = json.at("faceURL").as_string();
+    response->setFaceURL(value);
     return response;
-}
-
-bool UserClient::isAdminID(const std::string &userID) {
-    return userID == USER_CLIENT_ADMIN_ID;
 }

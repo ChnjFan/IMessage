@@ -8,6 +8,7 @@
 
 #include "UserClient.h"
 #include "Message.h"
+#include "model/UserInfo.h"
 
 ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, const int port, const int socketMaxConnNum,
                        const int socketMaxMsgLen, const int socketTimeout)
@@ -145,7 +146,7 @@ void ConnServer::newSessionRequest(const SessionPtr &session, const MessagePtr &
     UserClient userClient(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
 
     if (message->getMethod() == MESSAGE_REQUEST_REGISTER) {
-        USER_SERVICE_INFO *pUserInfo = UserClient::parseRegisterRequest(message->getMessage());
+        const UserInfo *pUserInfo = UserClient::parseRegisterRequest(message->getMessage());
         if (nullptr == pUserInfo) {
             MSG_GATEWAY_SERVER_LOG_WARN("User client register message error");
             const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
@@ -154,7 +155,7 @@ void ConnServer::newSessionRequest(const SessionPtr &session, const MessagePtr &
         }
     }
     else if (message->getMethod() != MESSAGE_REQUEST_AUTH) {
-        USER_SERVICE_INFO *pUserInfo = UserClient::parseLoginRequest(message->getMessage());
+        const UserInfo *pUserInfo = UserClient::parseLoginRequest(message->getMessage());
         if (nullptr == pUserInfo) {
             MSG_GATEWAY_SERVER_LOG_WARN("User client login message error");
             const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
@@ -162,26 +163,24 @@ void ConnServer::newSessionRequest(const SessionPtr &session, const MessagePtr &
             session->send(errInfo.c_str(), errInfo.size());
             return;
         }
-        if (UserClient::isAdminID(pUserInfo->userID)) {
-            if (userClient.getAdminToken(pUserInfo->userID, pUserInfo->secret, &pUserInfo->token, &pUserInfo->expireTime)) {
-                session->setSessionInfo(pUserInfo);
-                session->setState(SessionState::SESSION_IDLE);
 
-                ClientPtr client = Client::constructor(session);
-                client->setType(CLIENT_TYPE::ADMIN);
-                clients.insert({client->getUserID(), client});
-                --onlineSessionNum;
-                MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
-            }
-            else {
-                MSG_GATEWAY_SERVER_LOG_WARN("Client get admin token error, IP: " + session->getPeerIP());
-                const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::AUTH_ERROR, message->getMessage());
-                session->send(errInfo.c_str(), errInfo.size());
-            }
+        if (userClient.getUserToken(pUserInfo->getUserID(), pUserInfo->getSecret(),
+                                    &pUserInfo->getToken, &pUserInfo->expireTime)) {
+            session->setSessionInfo(pUserInfo);
+            session->setState(SessionState::SESSION_IDLE);
+
+            ClientPtr client = Client::constructor(session);
+            client->setType(CLIENT_TYPE::ADMIN);
+            clients.insert({client->getUserID(), client});
+            --onlineSessionNum;
+            MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
         }
         else {
-
+            MSG_GATEWAY_SERVER_LOG_WARN("Client get admin token error, IP: " + session->getPeerIP());
+            const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::AUTH_ERROR, message->getMessage());
+            session->send(errInfo.c_str(), errInfo.size());
         }
+
         delete pUserInfo;
     }
     else {

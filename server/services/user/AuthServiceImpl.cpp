@@ -2,8 +2,13 @@
 // Created by Fan on 25-4-28.
 //
 
+#include <jwt-cpp/jwt.h>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 #include "AuthServiceImpl.h"
 #include "UserServiceUtil.h"
+#include "boost/json/impl/kind.ipp"
 
 AuthServiceImpl::AuthServiceImpl(const std::shared_ptr<ConfigManager> &config)
     : config(config)
@@ -15,11 +20,14 @@ UserDatabase& AuthServiceImpl::getUserDatabase() {
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::getUserToken(grpc::CallbackServerContext *context,
-                                                         const user::auth::getUserTokenReq *request, user::auth::getUserTokenResp *response) {
+                                                         const user::auth::getUserTokenReq *request,
+                                                         user::auth::getUserTokenResp *response) {
     class Reactor : public grpc::ServerUnaryReactor {
     public:
-        Reactor(AuthServiceImpl& service, const user::auth::getUserTokenReq *request,
-                user::auth::getUserTokenResp *response) {
+        Reactor(AuthServiceImpl& service,
+                const user::auth::getUserTokenReq *request,
+                user::auth::getUserTokenResp *response,
+                const std::shared_ptr<ConfigManager>& config) {
             const UserInfo* pUserInfo = service.getUserDatabase().find(request->userid());
             if (nullptr == pUserInfo) {
                 USER_SERVICE_SERVER_LOG_INFO("Login error: Not find user " + request->userid());
@@ -33,18 +41,26 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getUserToken(grpc::CallbackServerCon
                 return;
             }
 
-            //TODO:设置 admin token 和过期时间
-            // token 根据 userID 生成
+            std::string token = generateToken(std::to_string(request->userid()),
+                config->getUserServiceConfig()->tokenSecret);
+            response->set_token(token);
+            response->set_expiretimeseconds(USER_TOKEN_EXPIRE_TIME);
 
             Finish(grpc::Status::OK);
         }
 
-        static bool isAdminUserID(const std::shared_ptr<ConfigManager> &config, const std::string &userID) {
-            return (config->getUserServiceConfig()->adminUserID == userID);
-        }
-
-        static bool isAdminSecret(const std::shared_ptr<ConfigManager> &config, const std::string &secret) {
-            return (config->getUserServiceConfig()->adminSecret == secret);
+        static std::string generateToken(const std::string& userID, const std::string& secret) {
+            boost::uuids::random_generator gen;
+            auto token = jwt::create()
+                .set_issuer("IMServer")
+                .set_subject(userID)
+                .set_audience("IMClient")
+                .set_issued_at(std::chrono::system_clock::now())
+                .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours(24))
+                .set_not_before(std::chrono::system_clock::now())
+                .set_id(boost::uuids::to_string(gen()))
+                .sign(jwt::algorithm::hs256(secret));
+            return token;
         }
 
     private:
@@ -57,15 +73,27 @@ grpc::ServerUnaryReactor * AuthServiceImpl::getUserToken(grpc::CallbackServerCon
             USER_SERVICE_SERVER_LOG_INFO("user::auth::getAdminToken Cancelled");
         }
     };
-    return new Reactor(*this, request, response);
+    return new Reactor(*this, request, response, config);
 }
 
 grpc::ServerUnaryReactor * AuthServiceImpl::parseToken(grpc::CallbackServerContext *context,
-    const user::auth::parseTokenReq *request, user::auth::parseTokenResp *response) {
+                                                       const user::auth::parseTokenReq *request, user::auth::parseTokenResp *response) {
     class Reactor : public grpc::ServerUnaryReactor {
     public:
-        Reactor(const user::auth::parseTokenReq *request, user::auth::parseTokenResp *response) {
-            //TODO:解析 token 逻辑
+        Reactor(const user::auth::parseTokenReq *request, user::auth::parseTokenResp *response,
+                const std::shared_ptr<ConfigManager>& config) {
+            try {
+                auto verifier = jwt::verify()
+                    .allow_algorithm(jwt::algorithm::hs256(config->getUserServiceConfig()->tokenSecret))
+                    .with_issuer("IMServer")
+                    .expires_at_leeway(30);
+                const auto decoded_token = jwt::decode(request->token());
+                const int32_t userID = std::stoi(decoded_token.get_subject());
+                response->set_userid(userID);
+            } catch (const std::exception &e) {
+                USER_SERVICE_SERVER_LOG_WARN(e.what());
+                Finish(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Invalid token"));
+            }
             Finish(grpc::Status::OK);
         }
     private:
@@ -78,5 +106,5 @@ grpc::ServerUnaryReactor * AuthServiceImpl::parseToken(grpc::CallbackServerConte
             USER_SERVICE_SERVER_LOG_INFO("user::auth::parseToken Cancelled");
         }
     };
-    return new Reactor(request, response);
+    return new Reactor(request, response, config);
 }

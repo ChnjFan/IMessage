@@ -9,9 +9,10 @@
 #include "DBConnPool.h"
 #include "model/UserInfo.h"
 
+#define USER_DATABASE_NAME "UserDatabase"
+
 class UserDatabase {
 public:
-    constexpr std::string USER_DATABASE_NAME = "UserDatabase";
     using USER_INFO_VALUE = std::variant<int, std::string>;
 
     explicit UserDatabase(const DB_CONFIG *config);

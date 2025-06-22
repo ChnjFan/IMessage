@@ -4,6 +4,7 @@ project(msg_gateway)
 include_directories(.
         ${PROJECT_SERVER_PATH}/common
         ${PROJECT_SERVER_PATH}/rpc
+        ${PROJECT_SERVER_PATH}/storage
         ${PROJECT_SERVER_PATH}/services/client)
 include_directories(${THIRD_PARTY_PATH}/boost/include
         ${THIRD_PARTY_PATH}/yaml-cpp/include

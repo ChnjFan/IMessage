@@ -13,3 +13,6 @@ rpc:
 admin:
   secret: admin
   userID: admin
+
+token:
+  secret: 74fcae6fb22f1c69dfff82de370351dade6f95dbe821aaa2a821a62dc2113abc

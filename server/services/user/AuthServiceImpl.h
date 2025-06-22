@@ -25,6 +25,7 @@ public:
             const user::auth::parseTokenReq *request,
             user::auth::parseTokenResp *response) override;
 private:
+    static constexpr int64_t USER_TOKEN_EXPIRE_TIME = 86400000;
     std::shared_ptr<ConfigManager> config;
     UserDatabase userDB;
 };
