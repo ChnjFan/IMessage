@@ -2,8 +2,8 @@
 // If you make any local change, they will be lost.
 // source: user/auth.proto
 
-#include "auth.pb.h"
-#include "auth.grpc.pb.h"
+#include "user/auth.pb.h"
+#include "user/auth.grpc.pb.h"
 
 #include <functional>
 #include <grpcpp/support/async_stream.h>

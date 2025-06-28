@@ -108,3 +108,28 @@ grpc::ServerUnaryReactor * AuthServiceImpl::parseToken(grpc::CallbackServerConte
     };
     return new Reactor(request, response, config);
 }
+
+grpc::ServerUnaryReactor * AuthServiceImpl::registerUer(grpc::CallbackServerContext *context,
+                                const user::auth::registerUserReq *request, user::auth::registerUserResp *response) {
+    class Reactor : public grpc::ServerUnaryReactor {
+    public:
+        Reactor(AuthServiceImpl& service, const user::auth::registerUserReq *request, user::auth::registerUserResp *response) {
+            UserInfo user(request->userid());
+            user.setNickName(request->nickname());
+            user.setFaceURL(request->faceurl());
+            user.setSecret(request->secret());
+            response->set_result(service.getUserDatabase().create(&user));
+            Finish(grpc::Status::OK);
+        }
+    private:
+        void OnDone() override {
+            USER_SERVICE_SERVER_LOG_INFO("user::auth::registerUer Finish");
+            delete this;
+        }
+
+        void OnCancel() override {
+            USER_SERVICE_SERVER_LOG_INFO("user::auth::registerUer Cancelled");
+        }
+    };
+    return new Reactor(*this, request, response);
+}

@@ -14,6 +14,7 @@ enum class SERVER_RETURN_CODE {
     SERVER_MESSAGE_ERROR = 2000,    // 消息错误
     REQUEST_ERROR = 2001,           // 请求错误
     AUTH_ERROR = 2002,              // 认证失败
+    REGISTER_ERROR = 2003,          // 注册失败
 };
 
 #endif //RETURNCODE_H

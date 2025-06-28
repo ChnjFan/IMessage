@@ -24,6 +24,10 @@ public:
     grpc::ServerUnaryReactor* parseToken(grpc::CallbackServerContext *context,
             const user::auth::parseTokenReq *request,
             user::auth::parseTokenResp *response) override;
+
+    grpc::ServerUnaryReactor* registerUer(grpc::CallbackServerContext *context,
+            const user::auth::registerUserReq *request,
+            user::auth::registerUserResp *response) override;
 private:
     static constexpr int64_t USER_TOKEN_EXPIRE_TIME = 86400000;
     std::shared_ptr<ConfigManager> config;

@@ -56,7 +56,13 @@ public:
         this->ex = std::move(ex);
     }
 
+    [[nodiscard]] bool isAdmin() const {
+        return userID == ADMIN_ID;
+    }
+
 private:
+    constexpr int ADMIN_ID = 1;
+
     int userID;
     std::string nickName;
     std::string secret;

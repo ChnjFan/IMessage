@@ -64,17 +64,20 @@ void Session::setPlatform(const int platform) {
     platformID = platform;
 }
 
-void Session::setSessionInfo(const USER_SERVICE_INFO *pInfo) {
-    userID = pInfo->userID;
-    token = pInfo->token;
-    tokenExpire = pInfo->expireTime;
+void Session::setSessionInfo(const UserInfo *pInfo) {
+    userID = pInfo->getUserID();
+}
+
+void Session::setToken(const std::string &token, int64_t expires) {
+    this->token = token;
+    this->tokenExpire = expires;
 }
 
 SessionState Session::getState() const {
     return state;
 }
 
-std::string Session::getUserID() const {
+int Session::getUserID() const {
     return userID;
 }
 

@@ -21,8 +21,9 @@ message parseTokenResp {
 
 message registerUserReq {
   int32 userID = 1;
-  string nickName = 2;
-  string faceURL = 3;
+  string secret = 2;
+  string nickName = 3;
+  string faceURL = 4;
 }
 
 message registerUserResp {

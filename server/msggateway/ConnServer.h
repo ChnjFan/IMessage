@@ -35,6 +35,10 @@ public:
     void handleRequest(const SessionPtr& session, const MessagePtr &message);
 
 private:
+    /**
+     * @brief 定时任务
+     * @note 每秒定时检测客户端连接
+     */
     void startDetectionLoop();
     void unauthSessionDetector();
 
@@ -52,6 +56,11 @@ private:
      * @note 新会话请求消息只能是终端用户认证或者用户注册消息
      */
     void newSessionRequest(const SessionPtr & session, const MessagePtr & message);
+    void registerRequest(const SessionPtr & session, const MessagePtr & message);
+    void loginRequest(const SessionPtr & session, const MessagePtr & message);
+
+    void insertUnauthSession(const SessionPtr &session);
+    std::list<SessionPtr>::iterator deleteUnauthSession(std::list<SessionPtr>::iterator iter);
 
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
 
@@ -70,7 +79,7 @@ private:
     int onlineSessionNum;
     tcp::acceptor acceptor;
     std::unordered_map<std::string, ClientPtr> clients;
-    std::list<SessionPtr> unauthorizedSessions;
+    std::list<SessionPtr> unauthSessions;
     steady_timer taskTimer;
 
     /* rpc 服务客户端 */

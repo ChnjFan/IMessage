@@ -4,7 +4,7 @@
 #ifndef GRPC_user_2fauth_2eproto__INCLUDED
 #define GRPC_user_2fauth_2eproto__INCLUDED
 
-#include "auth.pb.h"
+#include "user/auth.pb.h"
 
 #include <functional>
 #include <grpcpp/generic/async_generic_service.h>

@@ -12,8 +12,8 @@ UserClient::UserClient(const std::shared_ptr<grpc::Channel> &channel)
 bool UserClient::getUserToken(const UserInfo *pUserInfo, std::string *token, int64_t *expireTime) const {
     grpc::ClientContext context;
     user::auth::getUserTokenReq request;
-    request.set_userid(userid);
-    request.set_secret(secret);
+    request.set_userid(pUserInfo->getUserID());
+    request.set_secret(pUserInfo->getSecret());
 
     user::auth::getUserTokenResp response;
     bool result = false;
@@ -37,6 +37,33 @@ bool UserClient::getUserToken(const UserInfo *pUserInfo, std::string *token, int
         });
     std::unique_lock lock(mu);
     cv.wait(lock, [&done] { return done; });
+    return result;
+}
+
+bool UserClient::registerUser(const UserInfo *pUserInfo) const {
+    grpc::ClientContext context;
+    user::auth::registerUserReq request;
+    request.set_userid(pUserInfo->getUserID());
+    request.set_secret(pUserInfo->getSecret());
+    request.set_faceurl(pUserInfo->getFaceURL());
+    request.set_nickname(pUserInfo->getNickName());
+
+    user::auth::registerUserResp response;
+    bool result = false;
+    bool done = false;
+    std::mutex mu;
+    std::condition_variable cv;
+    stub->async()->registerUer(&context, &request, &response,
+        [&result, &done, &mu, &cv, &response](const grpc::Status &status) {
+            bool ret = false;
+            if (!status.ok()) ret = false;
+            else ret = response.result();
+
+            std::lock_guard lock(mu);
+            result = ret;
+            done = true;
+            cv.notify_one();
+        });
     return result;
 }
 

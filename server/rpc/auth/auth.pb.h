@@ -424,11 +424,28 @@ class registerUserReq final
 
   // accessors -------------------------------------------------------
   enum : int {
-    kNickNameFieldNumber = 2,
-    kFaceURLFieldNumber = 3,
+    kSecretFieldNumber = 2,
+    kNickNameFieldNumber = 3,
+    kFaceURLFieldNumber = 4,
     kUserIDFieldNumber = 1,
   };
-  // string nickName = 2;
+  // string secret = 2;
+  void clear_secret() ;
+  const std::string& secret() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_secret(Arg_&& arg, Args_... args);
+  std::string* mutable_secret();
+  PROTOBUF_NODISCARD std::string* release_secret();
+  void set_allocated_secret(std::string* value);
+
+  private:
+  const std::string& _internal_secret() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_secret(
+      const std::string& value);
+  std::string* _internal_mutable_secret();
+
+  public:
+  // string nickName = 3;
   void clear_nickname() ;
   const std::string& nickname() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -444,7 +461,7 @@ class registerUserReq final
   std::string* _internal_mutable_nickname();
 
   public:
-  // string faceURL = 3;
+  // string faceURL = 4;
   void clear_faceurl() ;
   const std::string& faceurl() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -475,8 +492,8 @@ class registerUserReq final
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
-      49, 2>
+      2, 4, 0,
+      55, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -493,6 +510,7 @@ class registerUserReq final
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const registerUserReq& from_msg);
+    ::google::protobuf::internal::ArenaStringPtr secret_;
     ::google::protobuf::internal::ArenaStringPtr nickname_;
     ::google::protobuf::internal::ArenaStringPtr faceurl_;
     ::int32_t userid_;
@@ -652,8 +670,6 @@ class parseTokenResp final
   // accessors -------------------------------------------------------
   enum : int {
     kUserIDFieldNumber = 1,
-    kPlatformIDFieldNumber = 2,
-    kExpireTimeSecondsFieldNumber = 3,
   };
   // int32 userID = 1;
   void clear_userid() ;
@@ -665,32 +681,12 @@ class parseTokenResp final
   void _internal_set_userid(::int32_t value);
 
   public:
-  // int32 platformID = 2;
-  void clear_platformid() ;
-  ::int32_t platformid() const;
-  void set_platformid(::int32_t value);
-
-  private:
-  ::int32_t _internal_platformid() const;
-  void _internal_set_platformid(::int32_t value);
-
-  public:
-  // int64 expireTimeSeconds = 3;
-  void clear_expiretimeseconds() ;
-  ::int64_t expiretimeseconds() const;
-  void set_expiretimeseconds(::int64_t value);
-
-  private:
-  ::int64_t _internal_expiretimeseconds() const;
-  void _internal_set_expiretimeseconds(::int64_t value);
-
-  public:
   // @@protoc_insertion_point(class_scope:user.auth.parseTokenResp)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
+      0, 1, 0,
       0, 2>
       _table_;
 
@@ -709,8 +705,6 @@ class parseTokenResp final
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const parseTokenResp& from_msg);
     ::int32_t userid_;
-    ::int32_t platformid_;
-    ::int64_t expiretimeseconds_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1571,50 +1565,6 @@ inline void parseTokenResp::_internal_set_userid(::int32_t value) {
   _impl_.userid_ = value;
 }
 
-// int32 platformID = 2;
-inline void parseTokenResp::clear_platformid() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.platformid_ = 0;
-}
-inline ::int32_t parseTokenResp::platformid() const {
-  // @@protoc_insertion_point(field_get:user.auth.parseTokenResp.platformID)
-  return _internal_platformid();
-}
-inline void parseTokenResp::set_platformid(::int32_t value) {
-  _internal_set_platformid(value);
-  // @@protoc_insertion_point(field_set:user.auth.parseTokenResp.platformID)
-}
-inline ::int32_t parseTokenResp::_internal_platformid() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.platformid_;
-}
-inline void parseTokenResp::_internal_set_platformid(::int32_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.platformid_ = value;
-}
-
-// int64 expireTimeSeconds = 3;
-inline void parseTokenResp::clear_expiretimeseconds() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.expiretimeseconds_ = ::int64_t{0};
-}
-inline ::int64_t parseTokenResp::expiretimeseconds() const {
-  // @@protoc_insertion_point(field_get:user.auth.parseTokenResp.expireTimeSeconds)
-  return _internal_expiretimeseconds();
-}
-inline void parseTokenResp::set_expiretimeseconds(::int64_t value) {
-  _internal_set_expiretimeseconds(value);
-  // @@protoc_insertion_point(field_set:user.auth.parseTokenResp.expireTimeSeconds)
-}
-inline ::int64_t parseTokenResp::_internal_expiretimeseconds() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.expiretimeseconds_;
-}
-inline void parseTokenResp::_internal_set_expiretimeseconds(::int64_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.expiretimeseconds_ = value;
-}
-
 // -------------------------------------------------------------------
 
 // registerUserReq
@@ -1641,7 +1591,55 @@ inline void registerUserReq::_internal_set_userid(::int32_t value) {
   _impl_.userid_ = value;
 }
 
-// string nickName = 2;
+// string secret = 2;
+inline void registerUserReq::clear_secret() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.secret_.ClearToEmpty();
+}
+inline const std::string& registerUserReq::secret() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:user.auth.registerUserReq.secret)
+  return _internal_secret();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void registerUserReq::set_secret(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.secret_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:user.auth.registerUserReq.secret)
+}
+inline std::string* registerUserReq::mutable_secret() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_secret();
+  // @@protoc_insertion_point(field_mutable:user.auth.registerUserReq.secret)
+  return _s;
+}
+inline const std::string& registerUserReq::_internal_secret() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.secret_.Get();
+}
+inline void registerUserReq::_internal_set_secret(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.secret_.Set(value, GetArena());
+}
+inline std::string* registerUserReq::_internal_mutable_secret() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.secret_.Mutable( GetArena());
+}
+inline std::string* registerUserReq::release_secret() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:user.auth.registerUserReq.secret)
+  return _impl_.secret_.Release();
+}
+inline void registerUserReq::set_allocated_secret(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.secret_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.secret_.IsDefault()) {
+    _impl_.secret_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:user.auth.registerUserReq.secret)
+}
+
+// string nickName = 3;
 inline void registerUserReq::clear_nickname() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.nickname_.ClearToEmpty();
@@ -1689,7 +1687,7 @@ inline void registerUserReq::set_allocated_nickname(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:user.auth.registerUserReq.nickName)
 }
 
-// string faceURL = 3;
+// string faceURL = 4;
 inline void registerUserReq::clear_faceurl() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.faceurl_.ClearToEmpty();

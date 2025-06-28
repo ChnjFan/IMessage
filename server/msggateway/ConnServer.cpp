@@ -46,11 +46,9 @@ void ConnServer::run() {
                 return;
             }
 
-            std::lock_guard lock(mutex);
             // 新建链接状态 INIT 进入未认证队列，超过 5 分钟未登录主动断链
             session->setState(SessionState::SESSION_INIT);
-            unauthorizedSessions.push_back(session);
-            ++onlineSessionNum;
+            insertUnauthSession(session);
             session->start();
         }
         run();
@@ -83,15 +81,9 @@ void ConnServer::startDetectionLoop() {
 }
 
 void ConnServer::unauthSessionDetector() {
-    for (auto it = unauthorizedSessions.begin(); it != unauthorizedSessions.end(); ) {
-        if (const SessionPtr &session = *it; session->getState() >= SessionState::SESSION_IDLE) {
-            std::lock_guard lock(mutex);
-            it = unauthorizedSessions.erase(it);
-        }
-        else if (session->getState() == SessionState::SESSION_DELETED) {
-            std::lock_guard lock(mutex);
-            it = unauthorizedSessions.erase(it);
-            --onlineSessionNum;
+    for (auto it = unauthSessions.begin(); it != unauthSessions.end(); ) {
+        if (const SessionPtr &session = *it; session->getState() == SessionState::SESSION_DELETED) {
+            it = deleteUnauthSession(it);
         }
         else if (session->extend()) {
             // TODO 设置心跳包 30s 超时
@@ -102,9 +94,7 @@ void ConnServer::unauthSessionDetector() {
             session->send(errInfo.c_str(), errInfo.size());
             session->close();
             // TODO:将 IP 记录下来进行限流
-            std::lock_guard lock(mutex);
-            it = unauthorizedSessions.erase(it);
-            --onlineSessionNum;
+            it = deleteUnauthSession(it);
         }
         else {
             ++it;
@@ -130,7 +120,7 @@ void ConnServer::helloRequest(const SessionPtr &session, const MessagePtr &messa
     boost::json::value json = boost::json::parse(message->getMessage());
 
     session->setState(SessionState::SESSION_READY);
-    session->setPlatform(json.at("platform").as_int64());
+    session->setPlatform(static_cast<int>(json.at("platform").as_int64()));
 
     const std::string res = Message::responseFormat(SERVER_RETURN_CODE::SUCCESS, "Hello success");
     session->send(res.c_str(), res.size());
@@ -143,51 +133,92 @@ void ConnServer::helloRequest(const SessionPtr &session, const MessagePtr &messa
  * @note 新会话请求消息只能是终端用户认证或者用户注册消息
  */
 void ConnServer::newSessionRequest(const SessionPtr &session, const MessagePtr &message) {
-    UserClient userClient(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
-
-    if (message->getMethod() == MESSAGE_REQUEST_REGISTER) {
-        const UserInfo *pUserInfo = UserClient::parseRegisterRequest(message->getMessage());
-        if (nullptr == pUserInfo) {
-            MSG_GATEWAY_SERVER_LOG_WARN("User client register message error");
+    switch (message->getMethod()) {
+        case MESSAGE_REQUEST_REGISTER:
+            registerRequest(session, message);
+            break;
+        case MESSAGE_REQUEST_AUTH:
+            loginRequest(session, message);
+            break;
+        default:
+            // 新会话的请求只能是注册消息或认证消息
+            MSG_GATEWAY_SERVER_LOG_WARN("Session state: READY. Message request: " + message->getMethod());
             const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
-                "Register request error");
+                "Client request message error");
             session->send(errInfo.c_str(), errInfo.size());
-        }
-    }
-    else if (message->getMethod() != MESSAGE_REQUEST_AUTH) {
-        const UserInfo *pUserInfo = UserClient::parseLoginRequest(message->getMessage());
-        if (nullptr == pUserInfo) {
-            MSG_GATEWAY_SERVER_LOG_WARN("User client login message error");
-            const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
-                "Login request error");
-            session->send(errInfo.c_str(), errInfo.size());
-            return;
-        }
-
-        if (userClient.getUserToken(pUserInfo->getUserID(), pUserInfo->getSecret(),
-                                    &pUserInfo->getToken, &pUserInfo->expireTime)) {
-            session->setSessionInfo(pUserInfo);
-            session->setState(SessionState::SESSION_IDLE);
-
-            ClientPtr client = Client::constructor(session);
-            client->setType(CLIENT_TYPE::ADMIN);
-            clients.insert({client->getUserID(), client});
-            --onlineSessionNum;
-            MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
-        }
-        else {
-            MSG_GATEWAY_SERVER_LOG_WARN("Client get admin token error, IP: " + session->getPeerIP());
-            const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::AUTH_ERROR, message->getMessage());
-            session->send(errInfo.c_str(), errInfo.size());
-        }
-
-        delete pUserInfo;
-    }
-    else {
-        // 新会话的请求只能是注册消息或认证消息
-        MSG_GATEWAY_SERVER_LOG_WARN("Session state: READY. Message request: " + message->getMethod());
-        const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
-            "Client request message error");
-        session->send(errInfo.c_str(), errInfo.size());
+            break;
     }
 }
+
+void ConnServer::registerRequest(const SessionPtr &session, const MessagePtr &message) {
+    const UserClient userClient(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
+    const UserInfo *pUserInfo = UserClient::parseRegisterRequest(message->getMessage());
+    if (nullptr == pUserInfo) {
+        MSG_GATEWAY_SERVER_LOG_WARN("User client register message error");
+        const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
+            "Register request error");
+        session->send(errInfo.c_str(), errInfo.size());
+    }
+
+    if (userClient.registerUser(pUserInfo)) {
+        const std::string registerResponse = Message::responseFormat(SERVER_RETURN_CODE::SUCCESS,
+                        "Register success");
+        session->send(registerResponse.c_str(), registerResponse.size());
+    }
+    else {
+        const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REGISTER_ERROR,
+                                    "Register fail");
+        session->send(errInfo.c_str(), errInfo.size());
+    }
+    delete pUserInfo;
+}
+
+void ConnServer::loginRequest(const SessionPtr &session, const MessagePtr &message) {
+    const UserClient userClient(clientManager.getChannel(SERVICE_NAME::SERVICE_USER));
+    const UserInfo *pUserInfo = UserClient::parseLoginRequest(message->getMessage());
+    if (nullptr == pUserInfo) {
+        MSG_GATEWAY_SERVER_LOG_WARN("User client login message error");
+        const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
+            "Login request error");
+        session->send(errInfo.c_str(), errInfo.size());
+        return;
+    }
+
+    std::string token;
+    int64_t expires = 0;
+    if (userClient.getUserToken(pUserInfo, &token, &expires)) {
+        session->setSessionInfo(pUserInfo);
+        session->setState(SessionState::SESSION_IDLE);
+        session->setToken(token, expires);
+
+        ClientPtr client = Client::constructor(session);
+        if (pUserInfo->isAdmin()) {
+            client->setType(CLIENT_TYPE::ADMIN);
+        }
+        else {
+            client->setType(CLIENT_TYPE::NORMAL);
+        }
+        clients.insert({client->getUserID(), client});
+        MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
+    }
+    else {
+        MSG_GATEWAY_SERVER_LOG_WARN("Client get admin token error, IP: " + session->getPeerIP());
+        const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::AUTH_ERROR, message->getMessage());
+        session->send(errInfo.c_str(), errInfo.size());
+    }
+
+    delete pUserInfo;
+}
+
+void ConnServer::insertUnauthSession(const SessionPtr &session) {
+    std::lock_guard lock(mutex);
+    unauthSessions.push_back(session);
+    ++onlineSessionNum;
+}
+
+std::list<SessionPtr>::iterator ConnServer::deleteUnauthSession(const std::list<SessionPtr>::iterator iter) {
+    std::lock_guard lock(mutex);
+    --onlineSessionNum;
+    return unauthSessions.erase(iter);
+}
+

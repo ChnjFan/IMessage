@@ -39,10 +39,11 @@ public:
 
     void setState(SessionState s);
     void setPlatform(int platform);
-    void setSessionInfo(const USER_SERVICE_INFO *pInfo);
+    void setSessionInfo(const UserInfo *pInfo);
+    void setToken(const std::string& token, int64_t expires);
 
     SessionState getState() const;
-    std::string getUserID() const;
+    int getUserID() const;
     std::string getPeerIP() const;
 
     void close();
@@ -62,7 +63,7 @@ private:
 
     /* 会话信息 */
     std::string token;
-    std::string userID;
+    int userID;
     int64_t tokenExpire;
     int platformID;
 

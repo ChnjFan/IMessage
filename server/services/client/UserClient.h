@@ -17,6 +17,8 @@ public:
 
     bool getUserToken(const UserInfo *pUserInfo, std::string *token, int64_t *expireTime) const;
 
+    bool registerUser(const UserInfo *pUserInfo) const;
+
     static UserInfo* parseLoginRequest(const char *request);
     static UserInfo* parseRegisterRequest(const char *request);
 
