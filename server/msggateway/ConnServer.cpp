@@ -133,21 +133,20 @@ void ConnServer::helloRequest(const SessionPtr &session, const MessagePtr &messa
  * @note 新会话请求消息只能是终端用户认证或者用户注册消息
  */
 void ConnServer::newSessionRequest(const SessionPtr &session, const MessagePtr &message) {
-    switch (message->getMethod()) {
-        case MESSAGE_REQUEST_REGISTER:
-            registerRequest(session, message);
-            break;
-        case MESSAGE_REQUEST_AUTH:
-            loginRequest(session, message);
-            break;
-        default:
-            // 新会话的请求只能是注册消息或认证消息
-            MSG_GATEWAY_SERVER_LOG_WARN("Session state: READY. Message request: " + message->getMethod());
-            const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
-                "Client request message error");
-            session->send(errInfo.c_str(), errInfo.size());
-            break;
+    const std::string requestMethod = message->getMethod();
+    if (requestMethod == MESSAGE_REQUEST_REGISTER) {
+        return registerRequest(session, message);
     }
+
+    if (requestMethod == MESSAGE_REQUEST_AUTH) {
+        return loginRequest(session, message);
+    }
+
+    // 新会话的请求只能是注册消息或认证消息
+    MSG_GATEWAY_SERVER_LOG_WARN("Session state: READY. Message request: " + message->getMethod());
+    const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::REQUEST_ERROR,
+        "Client request message error");
+    session->send(errInfo.c_str(), errInfo.size());
 }
 
 void ConnServer::registerRequest(const SessionPtr &session, const MessagePtr &message) {

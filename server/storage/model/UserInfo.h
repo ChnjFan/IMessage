@@ -61,7 +61,7 @@ public:
     }
 
 private:
-    constexpr int ADMIN_ID = 1;
+    static constexpr int ADMIN_ID = 1;
 
     int userID;
     std::string nickName;

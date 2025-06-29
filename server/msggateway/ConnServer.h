@@ -78,7 +78,7 @@ private:
     /* 客户端管理 */
     int onlineSessionNum;
     tcp::acceptor acceptor;
-    std::unordered_map<std::string, ClientPtr> clients;
+    std::unordered_map<int, ClientPtr> clients;
     std::list<SessionPtr> unauthSessions;
     steady_timer taskTimer;
 

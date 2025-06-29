@@ -7,7 +7,7 @@
 Client::Client(SessionPtr session) : conn(session) {
 }
 
-std::string Client::getUserID() const {
+int Client::getUserID() const {
     return conn->getUserID();
 }
 

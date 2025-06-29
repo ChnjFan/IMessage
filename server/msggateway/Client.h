@@ -21,7 +21,7 @@ class Client {
 public:
     explicit Client(SessionPtr session);
 
-    std::string getUserID() const;
+    int getUserID() const;
 
     void close();
 
