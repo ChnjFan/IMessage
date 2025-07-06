@@ -15,7 +15,7 @@
 #include "Client.h"
 #include "ClientManager.h"
 #include "ConfigManager.h"
-#include "Session.h"
+#include "TCPSession.h"
 #include "MsgGatewayUtil.h"
 
 using namespace boost::asio;
@@ -23,14 +23,14 @@ using ip::tcp;
 
 class ConnServer : public std::enable_shared_from_this<ConnServer> {
 public:
-    explicit ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, int port, int socketMaxConnNum = 100000,
+    explicit ConnServer(io_context &context, const std::shared_ptr<ConfigManager> &configMgr, int port, int socketMaxConnNum = 100000,
             int socketMaxMsgLen = 4096, int socketTimeout = 10);
 
     /**
      * @brief 运行服务器
      * @note  消息网关连接服务器，用于接收客户端连接
      */
-    void run();
+    void run(io_context &context);
 
     void handleRequest(const SessionPtr& session, const MessagePtr &message);
 
@@ -40,7 +40,6 @@ private:
      * @note 每秒定时检测客户端连接
      */
     void startDetectionLoop();
-    void unauthSessionDetector();
 
     /**
      * @brief hello 报文处理
@@ -59,27 +58,20 @@ private:
     void registerRequest(const SessionPtr & session, const MessagePtr & message);
     void loginRequest(const SessionPtr & session, const MessagePtr & message);
 
-    void insertUnauthSession(const SessionPtr &session);
-    std::list<SessionPtr>::iterator deleteUnauthSession(std::list<SessionPtr>::iterator iter);
-
     const int DEFAULT_WRITE_BUFFER_SIZE = 4096;
 
     std::mutex mutex;
-
     /* 长链接服务器配置 */
     std::shared_ptr<ConfigManager> configMgr;
 
-    int port;
+    int tcpPort;
     int socketMaxConnNum;
     int socketMaxMsgLen;
     int socketTimeout;
     int writeBufferSize;
 
     /* 客户端管理 */
-    int onlineSessionNum;
-    tcp::acceptor acceptor;
-    std::unordered_map<int, ClientPtr> clients;
-    std::list<SessionPtr> unauthSessions;
+    SessionManager sessionManager;
     steady_timer taskTimer;
 
     /* rpc 服务客户端 */

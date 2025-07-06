@@ -97,10 +97,14 @@ int main() {
 
         auto configMgr = loadConfig();
 
+        if (configMgr->getMsgGatewayConfig()->ports.size() < 2) {
+            MSG_GATEWAY_SERVER_LOG_ERROR("Server config: not set websocket");
+            return 0;
+        }
+
         const int longPort = configMgr->getMsgGatewayConfig()->ports[0]; //多个实例时需要计算当前端口
         MSG_GATEWAY_SERVER_LOG_INFO("Server is initializing. longConnSvrPort: "
                                     + std::to_string(longPort));
-        //TODO:连接数据库
 
         boost::asio::io_context io_context;
         ConnServerPtr longServer = ConnServerFactory::getConnServer(io_context,
@@ -112,9 +116,7 @@ int main() {
 
         MsgGatewayServer server(configMgr, longServer);
         server.init();
-
-        server.getConnServer()->run();
-        io_context.run();
+        server.run(io_context);
     }
     catch (Exception& e) {
         MSG_GATEWAY_SERVER_LOG_ERROR("Server error: " + std::string(e.what()));

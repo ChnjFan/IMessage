@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "Session.h"
+#include "TCPSession.h"
 
 enum class CLIENT_TYPE {
     ADMIN = 1,

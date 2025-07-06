@@ -13,14 +13,14 @@
 
 class MsgGatewayServer {
 public:
-    MsgGatewayServer(std::shared_ptr<ConfigManager>& config, ConnServerPtr& server);
+    MsgGatewayServer(std::shared_ptr<ConfigManager>& config, const ConnServerPtr& server);
 
     void init();
-    ConnServerPtr getConnServer();
+    void run(io_context & io_context);
 
 private:
     std::shared_ptr<ConfigManager> &config;
-    ConnServerPtr longServer;
+    ConnServerPtr connServer;
 };
 
 

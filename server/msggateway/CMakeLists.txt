@@ -13,7 +13,12 @@ link_directories(${THIRD_PARTY_PATH}/yaml-cpp/lib)
 
 aux_source_directory(./ SRC_LIST)
 
-add_executable(msg_gateway ${SRC_LIST})
+add_executable(msg_gateway ${SRC_LIST}
+        Session.h
+        WebSession.cpp
+        WebSession.h
+        TCPServer.h
+        WebSocketServer.h)
 set_target_properties(msg_gateway PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/debug
 )

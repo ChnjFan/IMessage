@@ -1,79 +1,107 @@
 //
-// Created by fan on 25-4-17.
+// Created by Fan on 25-7-5.
 //
 
-#ifndef IMSERVER_SESSION_H
-#define IMSERVER_SESSION_H
+#ifndef SESSION_H
+#define SESSION_H
 
-#include <list>
 #include <memory>
-#include <boost/asio.hpp>
+#include <functional>
+#include <map>
 
 #include "Message.h"
-#include "UserClient.h"
-
-using namespace boost::asio;
-using ip::tcp;
-
-enum class SessionState {
-    SESSION_INIT = 0,       // 初始化状态，会话为准备好接收消息
-    SESSION_DELETED,        // 会话删除，不能接收发送消息
-    SESSION_READY,          // 会话已连接，未进行认证，可以接收消息，不能推送消息
-    SESSION_IDLE,           // 会话空闲，可以接收或推送消息
-};
-
-class ConnServer;
+#include "MsgGatewayUtil.h"
 
 class Session : public std::enable_shared_from_this<Session> {
 public:
-    Session(const any_io_executor& ex, const std::weak_ptr<ConnServer> &server);
+    virtual ~Session() = default;
 
-    tcp::socket& socket();
+    // 会话生命周期管理
+    virtual void start() = 0;
+    virtual void stop() = 0;
 
-    void start();
+    // 数据发送
+    virtual void send(const std::string& message) = 0;
+    virtual void send(const char* message, std::size_t msgSize) = 0;
 
-    bool send(const char* buffer, std::size_t bufferSize);
-    bool send(const std::string& buffer);
+    // 会话信息
+    virtual std::string getId() const = 0;
+    virtual std::string getRemoteEndpoint() const = 0;
 
-    bool extend();
+    virtual bool extend() = 0;
 
-    void setState(SessionState s);
-    void setPlatform(int platform);
-    void setSessionInfo(const UserInfo *pInfo);
-    void setToken(const std::string& token, int64_t expires);
+    // 设置回调函数
+    void setMessageCallback(const std::function<void(std::shared_ptr<Session>, const std::string&)> &callback) {
+        messageCallback_ = callback;
+    }
 
-    SessionState getState() const;
-    int getUserID() const;
-    std::string getPeerIP() const;
+    void setErrorCallback(const std::function<void(std::shared_ptr<Session>, const std::string&)> &callback) {
+        errorCallback_ = callback;
+    }
 
-    void close();
+    void setCloseCallback(const std::function<void(std::shared_ptr<Session>)> &callback) {
+        closeCallback_ = callback;
+    }
 
-private:
-    void readHeader();
-    void readBody();
-    void doRead();
-    void doWrite();
-
-    const int SESSION_HELLO_TIMEOUT = 30;
-    const int SESSION_DEFAULT_TIMEOUT = 300;
-    tcp::socket socket_;
-    SessionState state;
-    /* 操作时间戳，用于操作超时检测，单位秒 */
-    int trick;
-
-    /* 会话信息 */
-    std::string token;
-    int userID;
-    int64_t tokenExpire;
-    int platformID;
-
-    /* 消息读写缓存 */
-    MessagePtr readMsg;
-    std::list<MessagePtr> writeMsgs;
-
-    std::weak_ptr<ConnServer> connServer;
+protected:
+    std::string id;     // 会话 ID
+    int trick = 0;      // 操作时间戳，用于操作超时检测，单位秒
+    std::function<void(std::shared_ptr<Session>, const std::string&)> messageCallback_;
+    std::function<void(std::shared_ptr<Session>, const std::string&)> errorCallback_;
+    std::function<void(std::shared_ptr<Session>)> closeCallback_;
 };
 
-typedef std::shared_ptr<Session> SessionPtr;
+class SessionManager {
+public:
+    void addSession(const std::shared_ptr<Session> &session) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        sessions_[session->getId()] = session;
 
-#endif //IMSERVER_SESSION_H
+        // 设置会话关闭回调
+        session->setCloseCallback([this](const std::shared_ptr<Session> &s) {
+            removeSession(s->getId());
+        });
+    }
+
+    void removeSession(const std::string& id) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        sessions_.erase(id);
+    }
+
+    void sendToAll(const std::string& message) const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (const auto&[id, session] : sessions_) {
+            session->send(message);
+        }
+    }
+
+    std::size_t getSessionCount() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return sessions_.size();
+    }
+
+    bool isExceedConnLimit() const {
+        // TODO 后续增加配置
+        return (sessions_.size() >= 1000);
+    }
+
+    void check() {
+        // todo 考虑怎么能检测所有会话
+        for (const auto&[id, session] : sessions_) {
+            if (session->extend()) {
+                MSG_GATEWAY_SERVER_LOG_ERROR("Session Timeout. IP: " + session->getRemoteEndpoint());
+                const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::SESSION_TIMEOUT,
+                    "Session send hello timeout.");
+                session->send(errInfo);
+                session->stop();
+                break;
+            }
+        }
+    }
+
+private:
+    mutable std::mutex mutex_;
+    std::map<std::string, std::shared_ptr<Session>> sessions_;
+};
+
+#endif //SESSION_H

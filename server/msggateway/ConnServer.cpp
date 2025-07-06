@@ -8,18 +8,18 @@
 
 #include "UserClient.h"
 #include "Message.h"
+#include "TCPServer.h"
+#include "WebSocketServer.h"
 #include "model/UserInfo.h"
 
-ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr, const int port, const int socketMaxConnNum,
+ConnServer::ConnServer(io_context &context, const std::shared_ptr<ConfigManager> &configMgr, const int port, const int socketMaxConnNum,
                        const int socketMaxMsgLen, const int socketTimeout)
-      : port(port)
+      : tcpPort(port)
       , socketMaxConnNum(socketMaxConnNum)
       , socketMaxMsgLen(socketMaxMsgLen)
       , socketTimeout(socketTimeout)
       , writeBufferSize(DEFAULT_WRITE_BUFFER_SIZE)
-      , onlineSessionNum(0)
-      , acceptor(io, tcp::endpoint(tcp::v4(), port))
-      , taskTimer(io, chrono::seconds(1)) {
+      , taskTimer(context, chrono::seconds(1)) {
     const std::string userServiceTarget = configMgr->getUserServiceConfig()->serviceConfig.registerIP + ":"
                                     + std::to_string(configMgr->getUserServiceConfig()->serviceConfig.ports[0]);
     clientManager.registerService(SERVICE_NAME::SERVICE_USER, userServiceTarget);
@@ -27,32 +27,11 @@ ConnServer::ConnServer(io_context &io, std::shared_ptr<ConfigManager> &configMgr
     startDetectionLoop();
 }
 
-void ConnServer::run() {
-    auto session = std::make_shared<Session>(acceptor.get_executor(), shared_from_this());
-    acceptor.async_accept(session->socket(), [this, session](const boost::system::error_code &errCode) {
-        if (errCode) {
-            MSG_GATEWAY_SERVER_LOG_WARN("Client conn error: " + errCode.message());
-        }
-        else {
-            MSG_GATEWAY_SERVER_LOG_INFO("New connection from " + session->socket().remote_endpoint().address().to_string());
-            // 超过单个节点的连接限制
-            if (onlineSessionNum >= socketMaxConnNum) {
-                MSG_GATEWAY_SERVER_LOG_WARN("The connection exceeds the maximum limit of a single node: "
-                    + std::to_string(socketMaxConnNum));
-                const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::SESSION_OVERRUN,
-                    "The connection exceeds the maximum limit of a single node");
-                session->send(errInfo.c_str(), errInfo.size());
-                session->close();
-                return;
-            }
-
-            // 新建链接状态 INIT 进入未认证队列，超过 5 分钟未登录主动断链
-            session->setState(SessionState::SESSION_INIT);
-            insertUnauthSession(session);
-            session->start();
-        }
-        run();
-    });
+void ConnServer::run(io_context &context) {
+    TCPServer tcpServer(context, tcpPort, std::shared_ptr<SessionManager>(&sessionManager));
+    tcpServer.start();
+    WebSocketServer webSocketServer(context, 8080, std::shared_ptr<SessionManager>(&sessionManager));
+    webSocketServer.start();
 }
 
 void ConnServer::handleRequest(const SessionPtr& session, const MessagePtr &message) {
@@ -75,31 +54,9 @@ void ConnServer::startDetectionLoop() {
             MSG_GATEWAY_SERVER_LOG_ERROR("Timer error: " + errCode.message());
             return;
         }
-        unauthSessionDetector();
+        sessionManager.check();
         startDetectionLoop();
     });
-}
-
-void ConnServer::unauthSessionDetector() {
-    for (auto it = unauthSessions.begin(); it != unauthSessions.end(); ) {
-        if (const SessionPtr &session = *it; session->getState() == SessionState::SESSION_DELETED) {
-            it = deleteUnauthSession(it);
-        }
-        else if (session->extend()) {
-            // TODO 设置心跳包 30s 超时
-            // 会话建立连接 30s 没有发送 hello 报文判定为超期，超期会话回复客户端超期后直接释放断链，此时客户端需要重新建链
-            MSG_GATEWAY_SERVER_LOG_WARN("Session send hello timeout, IP: " + session->getPeerIP());
-            const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::SESSION_TIMEOUT,
-                    "Session send hello timeout.");
-            session->send(errInfo.c_str(), errInfo.size());
-            session->close();
-            // TODO:将 IP 记录下来进行限流
-            it = deleteUnauthSession(it);
-        }
-        else {
-            ++it;
-        }
-    }
 }
 
 /**
