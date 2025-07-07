@@ -12,7 +12,6 @@
 #include <boost/pool/object_pool.hpp>
 #include <boost/asio.hpp>
 
-#include "Client.h"
 #include "ClientManager.h"
 #include "ConfigManager.h"
 #include "TCPSession.h"

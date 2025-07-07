@@ -143,38 +143,15 @@ void ConnServer::loginRequest(const SessionPtr &session, const MessagePtr &messa
     std::string token;
     int64_t expires = 0;
     if (userClient.getUserToken(pUserInfo, &token, &expires)) {
-        session->setSessionInfo(pUserInfo);
         session->setState(SessionState::SESSION_IDLE);
         session->setToken(token, expires);
-
-        ClientPtr client = Client::constructor(session);
-        if (pUserInfo->isAdmin()) {
-            client->setType(CLIENT_TYPE::ADMIN);
-        }
-        else {
-            client->setType(CLIENT_TYPE::NORMAL);
-        }
-        clients.insert({client->getUserID(), client});
-        MSG_GATEWAY_SERVER_LOG_DEBUG("User online, current node client num: " + std::to_string(clients.size()));
     }
     else {
-        MSG_GATEWAY_SERVER_LOG_WARN("Client get admin token error, IP: " + session->getPeerIP());
+        MSG_GATEWAY_SERVER_LOG_WARN("Client get admin token error, IP: " + session->getRemoteEndpoint());
         const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::AUTH_ERROR, message->getMessage());
         session->send(errInfo.c_str(), errInfo.size());
     }
 
     delete pUserInfo;
-}
-
-void ConnServer::insertUnauthSession(const SessionPtr &session) {
-    std::lock_guard lock(mutex);
-    unauthSessions.push_back(session);
-    ++onlineSessionNum;
-}
-
-std::list<SessionPtr>::iterator ConnServer::deleteUnauthSession(const std::list<SessionPtr>::iterator iter) {
-    std::lock_guard lock(mutex);
-    --onlineSessionNum;
-    return unauthSessions.erase(iter);
 }
 

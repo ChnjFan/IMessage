@@ -15,8 +15,8 @@ using namespace boost::asio;
 
 class TCPServer {
 public:
-    TCPServer(io_context& ioc, unsigned short port, const std::shared_ptr<SessionManager> &manager)
-        : acceptor(ioc, {ip::tcp::v4(), port}), socket(ioc), sessionManager(manager) {
+    TCPServer(io_context& context, unsigned short port, const std::shared_ptr<SessionManager> &manager)
+        : acceptor(context, {ip::tcp::v4(), port}), socket(context), sessionManager(manager) {
     }
 
     void start() {
@@ -30,7 +30,7 @@ private:
             }
             else {
                 MSG_GATEWAY_SERVER_LOG_INFO("New TCP connection from " + socket.remote_endpoint().address().to_string());
-                auto session = std::make_shared<TCPSession>(socket, sessionManager);
+                auto session = std::make_shared<TCPSession>(std::move(socket), sessionManager);
                 if (sessionManager->isExceedConnLimit()) {
                     MSG_GATEWAY_SERVER_LOG_WARN("The connection exceeds the maximum limit of a single node");
                     const std::string errInfo = Message::responseFormat(SERVER_RETURN_CODE::SESSION_OVERRUN,

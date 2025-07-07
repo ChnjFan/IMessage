@@ -141,10 +141,9 @@ void TCPSession::readBody() {
                 setState(SessionState::SESSION_DELETED);
                 return;
             }
-            // TODO:处理客户端消息
-            if (const auto server = connServer.lock()) {
-                server->handleRequest(shared_from_this(), readMsg);
-            }
+
+            if (messageCallback_)
+                messageCallback_(shared_from_this(), readMsg->body());
             readMsg->clear();
             doRead();
         });
@@ -156,18 +155,18 @@ void TCPSession::doRead() {
 
 void TCPSession::doWrite() {
     auto self(shared_from_this());
-    if (writeMsgs.empty()) {
+    if (sendQueue.empty()) {
         return;
     }
     async_write(tcpSocket,
-        boost::asio::buffer(writeMsgs.front()->encode(),
-            writeMsgs.front()->length()),
+        boost::asio::buffer(sendQueue.front()->encode(),
+            sendQueue.front()->length()),
             [this, self](const boost::system::error_code &ec, std::size_t /*length*/)
             {
                 if (!ec)
                 {
-                    writeMsgs.pop_front();
-                    if (!writeMsgs.empty())
+                    sendQueue.pop();
+                    if (!sendQueue.empty())
                     {
                         doWrite();
                     }

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(msg_gateway)
 
 include_directories(.
+        /usr/local/openssl-arm64/include
         ${PROJECT_SERVER_PATH}/common
         ${PROJECT_SERVER_PATH}/rpc
         ${PROJECT_SERVER_PATH}/storage
@@ -9,7 +10,8 @@ include_directories(.
 include_directories(${THIRD_PARTY_PATH}/boost/include
         ${THIRD_PARTY_PATH}/yaml-cpp/include
         ${THIRD_PARTY_PATH}/grpc/include)
-link_directories(${THIRD_PARTY_PATH}/yaml-cpp/lib)
+link_directories(${THIRD_PARTY_PATH}/yaml-cpp/lib
+        /usr/local/openssl-arm64/lib)
 
 aux_source_directory(./ SRC_LIST)
 

@@ -13,7 +13,24 @@ WebSession::WebSession(tcp::socket socket, const std::shared_ptr<SessionManager>
 }
 
 void WebSession::start() {
-    websocket.async_accept(bind_front_handler(&WebSession::onAccept, shared_from_this()));
+    auto self = shared_from_this();
+    websocket.async_accept(
+        [this, self](const boost::system::error_code &ec) {
+            if (ec) {
+                MSG_GATEWAY_SERVER_LOG_WARN("Websocket conn error: " + ec.message());
+                return;
+            }
+
+            if (sessionManager->isExceedConnLimit()) {
+                MSG_GATEWAY_SERVER_LOG_WARN("Websocket exceed conn limit");
+                stop();
+                return;
+            }
+
+            sessionManager->addSession(shared_from_this());
+            doRead();
+        }
+    );
 }
 
 void WebSession::stop() {
@@ -55,24 +72,9 @@ bool WebSession::extend() {
     return (++trick >= 30);
 }
 
-void WebSession::onAccept(const error_code &ec) {
-    if (ec) {
-        MSG_GATEWAY_SERVER_LOG_WARN("Websocket conn error: " + ec.message());
-        return;
-    }
-
-    if (sessionManager->isExceedConnLimit()) {
-        MSG_GATEWAY_SERVER_LOG_WARN("Websocket exceed conn limit");
-        stop();
-        return;
-    }
-
-    sessionManager->addSession(shared_from_this());
-    doRead();
-}
-
 void WebSession::doRead() {
-    websocket.async_read(buffer, [this, shared_from_this()](const error_code &ec, std::size_t bytes_transferred) {
+    auto self = shared_from_this();
+    websocket.async_read(buffer, [this, self](const error_code &ec, std::size_t bytes_transferred) {
         // 忽略参数 bytes_transferred，可以不携带改该参数
         boost::ignore_unused(bytes_transferred);
         if (ec == websocket::error::closed) {
@@ -96,7 +98,8 @@ void WebSession::doRead() {
 }
 
 void WebSession::doWrite() {
-    websocket.async_write(net::buffer(sendQueue.front()), [this](const error_code &ec, std::size_t bytes_transferred) {
+    auto self = shared_from_this();
+    websocket.async_write(net::buffer(sendQueue.front()), [this, self](const error_code &ec, std::size_t bytes_transferred) {
         boost::ignore_unused(bytes_transferred);
         if (ec) {
             MSG_GATEWAY_SERVER_LOG_WARN("Websocket write error: " + ec.message());

@@ -30,7 +30,6 @@ public:
     bool extend() override;
 
 private:
-    void onAccept(const error_code &ec);
     void doRead();
     void doWrite();
 
