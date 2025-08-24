@@ -1,22 +1,8 @@
 #!/bin/bash
 
 source "./utils.sh"
-
-BASE_DIR=$(cd $(dirname $0); pwd -P)
-echo $BASE_DIR
-
-install_boost() {
-    check_user
-    mkdir boost
-    cd boost || exit
-    download boost_1_87_0.tar.gz https://archives.boost.io/release/1.87.0/source/${INSTALL_PKG}.tar.gz
-    tar -zxvf boost_1_87_0.tar.gz
-    cd boost_1_87_0 || exit
-    ./bootstrap.sh --prefix=/home/fan/IMessage/third_party/boost/
-    ./b2 install --prefix=/home/fan/IMessage/third_party/boost/
-
-    return 0
-}
+source "./boost_install.sh"
+source "./grpc_install.sh"
 
 install_log4cpp() {
     check_user
@@ -33,5 +19,11 @@ install_log4cpp() {
     sudo make install
 }
 
-#install_boost
-install_log4cpp
+main() {
+  check_user
+  check_dependencies
+  install_boost
+  install_grpc
+}
+
+main

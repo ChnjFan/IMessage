@@ -1,26 +1,25 @@
 #!/bin/bash
 
-download() {
-    if [ -f "$1" ]; then
-        echo "$1 existed."
-    else
-        echo "$1 not existed, begin to download..."
-        wget $2
-        if [ $? -eq 0 ]; then
-            echo "download $1 successed";
-        else
-            echo "Error: download $1 failed";
-            return 1;
+check_user() {
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "警告: 建议以root权限运行以确保安装到系统目录"
+        read -p "是否继续以当前用户身份安装? (y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
         fi
     fi
-    return 0
 }
 
-check_user() {
-    if [ $(id -u) != "0" ]; then
-        echo "Error: You must be root to run this script, please use root to install im"
-        exit 1
-    fi
+# 检查是否安装了必要的工具
+check_dependencies() {
+    local dependencies=("wget" "curl" "tar" "bzip2" "gcc" "g++" "make")
+
+    for dep in "${dependencies[@]}"; do
+        if ! command -v $dep &> /dev/null; then
+            echo "缺少必要的工具: $dep"
+        fi
+    done
 }
 
 get_cur_dir() {
